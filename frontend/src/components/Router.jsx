@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import AdvancedFeature from "../pages/AdvancedFeature";
 import GeneralFeature from "../pages/GeneralFeature";
+import Product from "../pages/products/Product";
 export default function Router() {
     return (
         <Routes>
@@ -13,6 +14,7 @@ export default function Router() {
                 element={<AdvancedFeature />}
                 exact
             />
+            <Route path="/products" element={<Product />} exact />
         </Routes>
     );
 }

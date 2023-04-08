@@ -21,7 +21,8 @@ export default function Sidebar() {
                     <li
                         className={`nav-item dropdown ${
                             location.pathname === "/general-feature" ||
-                            location.pathname === "/advanced-feature"
+                            location.pathname === "/advanced-feature" ||
+                            location.pathname === "/products"
                                 ? "active"
                                 : ""
                         }`}
@@ -56,6 +57,15 @@ export default function Sidebar() {
                                 <NavLink href="/advanced-feature">
                                     Advanced Feature
                                 </NavLink>
+                            </li>
+                            <li
+                                className={`nav-item ${
+                                    location.pathname === "/products"
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <NavLink href="/products">Products</NavLink>
                             </li>
                         </ul>
                     </li>
