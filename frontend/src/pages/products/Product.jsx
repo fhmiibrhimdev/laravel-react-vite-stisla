@@ -5,7 +5,6 @@ import withReactContent from "sweetalert2-react-content";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
-import { Link } from "react-router-dom";
 
 export default function Product() {
     const baseURL = "http://127.0.0.1:8000/api";
