@@ -20,7 +20,7 @@ export default function Product() {
     const [searchTermDebounced, setSearchTermDebounced] = useState("");
     const [showing, setShowing] = useState(10);
 
-    const [shouldRefetch, setShouldRefetch] = useState(false);
+    const [refetch, setRefetch] = useState(Math.random());
     const MySwal = withReactContent(Swal);
 
     useEffect(() => {
@@ -37,7 +37,10 @@ export default function Product() {
             .catch((error) => {
                 console.log(error);
             });
-    }, [currentPage, showing, searchTermDebounced, shouldRefetch]);
+    }, [currentPage, showing, searchTermDebounced, refetch]);
+
+    const [modalData, setModalData] = useState(null);
+    const [isEditing, setIsEditing] = useState(null);
 
     /**
      * Initial form, reset input fields, and validate the form
@@ -116,8 +119,25 @@ export default function Product() {
     };
 
     /**
-     * Handle insert request
+     * Handle request
      */
+
+    const handleAdd = () => {
+        setModalData(null);
+        setIsEditing(false);
+        setFormData(initialFormData);
+    };
+
+    const handleEdit = (id) => {
+        const data = products.find((product) => product.id === id);
+        setModalData(data);
+        setFormData({
+            name: data.name,
+            description: data.description,
+            price: data.price,
+        });
+        setIsEditing(true);
+    };
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -126,32 +146,63 @@ export default function Product() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (validateForm()) {
-            axios
-                .post(`${baseURL}/products`, formData, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                .then((response) => {
-                    if (response.status === 200) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Data created successfully",
-                            icon: "success",
-                            timer: 1500,
-                        }).then(() => {
-                            $(".modal").modal("hide");
-                            setShouldRefetch(true); // refetch new data
-                            setFormData(initialFormData); // set initial value for input
-                        });
-                    } else {
-                        throw new Error("Network response was not ok");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+
+        if (!isEditing) {
+            if (validateForm()) {
+                axios
+                    .post(`${baseURL}/products`, formData, {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Data created successfully",
+                                icon: "success",
+                                timer: 1500,
+                            }).then(() => {
+                                $(".modal").modal("hide");
+                                setRefetch(Math.random()); // refetch new data
+                                setFormData(initialFormData); // set initial value for input
+                            });
+                        } else {
+                            throw new Error("Network response was not ok");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
+        } else {
+            if (validateForm()) {
+                axios
+                    .put(`${baseURL}/products/${modalData.id}`, formData, {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Data updated successfully",
+                                icon: "success",
+                                timer: 1500,
+                            }).then(() => {
+                                $(".modal").modal("hide");
+                                setRefetch(Math.random()); // refetch new data
+                                setFormData(initialFormData); // set initial value for input
+                            });
+                        } else {
+                            throw new Error("Network response was not ok");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
         }
     };
 
@@ -265,12 +316,18 @@ export default function Product() {
                                                 <td>{product.description}</td>
                                                 <td>{product.price}</td>
                                                 <td className="text-center">
-                                                    <Link
-                                                        to={`/edit/${product.id}`}
-                                                        className="btn btn-warning mr-2"
+                                                    <button
+                                                        onClick={() =>
+                                                            handleEdit(
+                                                                product.id
+                                                            )
+                                                        }
+                                                        className="btn btn-primary mr-2"
+                                                        data-toggle="modal"
+                                                        data-target="#formDataModal"
                                                     >
                                                         <i className="fas fa-edit"></i>
-                                                    </Link>
+                                                    </button>
                                                     <button
                                                         onClick={() =>
                                                             handleConfirmationDelete(
@@ -297,6 +354,7 @@ export default function Product() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Pagination and showing data */}
                         <div className="d-flex justify-content-between align-items-center mt-4 p-3 table-responsive">
                             <div>
                                 Showing {(currentPage - 1) * showing + 1} to{" "}
@@ -368,29 +426,30 @@ export default function Product() {
                                 </ul>
                             </div>
                         </div>
+                        {/* Pagination and showing data */}
                     </div>
                 </div>
                 <button
                     className="btn-modal"
                     data-toggle="modal"
-                    data-target="#addDataModal"
+                    data-target="#formDataModal"
+                    onClick={handleAdd}
                 >
                     <i className="far fa-plus"></i>
                 </button>
             </div>
 
-            {/* Modal Add */}
             <div
                 className="modal fade"
-                id="addDataModal"
-                aria-labelledby="addDataModalLabel"
+                id="formDataModal"
+                aria-labelledby="formDataModalLabel"
                 aria-hidden="true"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="addDataModalLabel">
-                                Add Data
+                            <h5 className="modal-title" id="formDataModalLabel">
+                                {isEditing ? "Edit Data" : "Add Data"}
                             </h5>
                             <button
                                 type="button"
@@ -412,7 +471,7 @@ export default function Product() {
                                         className={`form-control ${
                                             formErrors.name ? "is-invalid" : ""
                                         }`}
-                                        value={formData.name}
+                                        value={formData.name || ""}
                                         onChange={handleInputChange}
                                     />
                                     {formErrors.name && (
@@ -434,7 +493,7 @@ export default function Product() {
                                                 : ""
                                         }`}
                                         style={{ height: 100 }}
-                                        value={formData.description}
+                                        value={formData.description || ""}
                                         onChange={handleInputChange}
                                     ></textarea>
                                     {formErrors.description && (
@@ -452,7 +511,7 @@ export default function Product() {
                                         className={`form-control ${
                                             formErrors.price ? "is-invalid" : ""
                                         }`}
-                                        value={formData.price}
+                                        value={formData.price || ""}
                                         onChange={handleInputChange}
                                     />
                                     {formErrors.price && (
