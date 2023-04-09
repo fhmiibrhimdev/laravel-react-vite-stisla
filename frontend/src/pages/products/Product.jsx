@@ -245,6 +245,69 @@ export default function Product() {
                         </div>
                     </div>
                 </div>
+                <button
+                    class="btn-modal"
+                    data-toggle="modal"
+                    data-target="#tambahDataModal"
+                >
+                    <i class="far fa-plus"></i>
+                </button>
+            </div>
+            <div
+                className="modal fade"
+                data-backdrop="false"
+                id="tambahDataModal"
+                aria-labelledby="tambahDataModalLabel"
+                aria-hidden="true"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5
+                                className="modal-title"
+                                id="tambahDataModalLabel"
+                            >
+                                Tambah Data
+                            </h5>
+                            <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label for="nama_kategori">Kategori</label>
+                                    <input
+                                        type="text"
+                                        wire:model="nama_kategori"
+                                        id="nama_kategori"
+                                        className="form-control"
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary tw-bg-gray-300"
+                                    data-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary tw-bg-blue-500"
+                                >
+                                    Save Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </Case>
     );

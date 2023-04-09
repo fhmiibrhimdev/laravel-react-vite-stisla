@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import NavLink from "./NavLink";
 
 export default function Sidebar() {
     const location = useLocation();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const handleDropdownClick = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const closeDropdown = () => {
+        setIsDropdownOpen(false);
+    };
+
     return (
         <nav className="navbar navbar-secondary navbar-expand-lg">
             <div className="container">
@@ -31,11 +41,17 @@ export default function Sidebar() {
                             href="#"
                             data-toggle="dropdown"
                             className="nav-link has-dropdown"
+                            onClick={handleDropdownClick}
                         >
                             <i className="fas fa-fire"></i>
                             <span>Module 1</span>
                         </a>
-                        <ul className="dropdown-menu">
+                        <ul
+                            className={`dropdown-menu ${
+                                isDropdownOpen ? "show" : ""
+                            }`}
+                            onClick={closeDropdown}
+                        >
                             <li
                                 className={`nav-item ${
                                     location.pathname === "/general-feature"
@@ -43,7 +59,10 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink href="/general-feature">
+                                <NavLink
+                                    href="/general-feature"
+                                    onClick={closeDropdown}
+                                >
                                     General Feature
                                 </NavLink>
                             </li>
@@ -54,7 +73,10 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink href="/advanced-feature">
+                                <NavLink
+                                    href="/advanced-feature"
+                                    onClick={closeDropdown}
+                                >
                                     Advanced Feature
                                 </NavLink>
                             </li>
@@ -65,7 +87,12 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink href="/products">Products</NavLink>
+                                <NavLink
+                                    href="/products"
+                                    onClick={closeDropdown}
+                                >
+                                    Products
+                                </NavLink>
                             </li>
                         </ul>
                     </li>
