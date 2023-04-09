@@ -1,18 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import NavLink from "./NavLink";
 
 export default function Sidebar() {
     const location = useLocation();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     const handleDropdownClick = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+        setDropdownOpen(!dropdownOpen);
     };
 
-    const closeDropdown = () => {
-        setIsDropdownOpen(false);
+    const handleClickOutsideDropdown = (event) => {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target)
+        ) {
+            setDropdownOpen(false);
+        }
     };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutsideDropdown
+            );
+        };
+    }, []);
 
     return (
         <nav className="navbar navbar-secondary navbar-expand-lg">
@@ -36,21 +52,22 @@ export default function Sidebar() {
                                 ? "active"
                                 : ""
                         }`}
+                        ref={dropdownRef}
                     >
                         <a
                             href="#"
-                            data-toggle="dropdown"
-                            className="nav-link has-dropdown"
                             onClick={handleDropdownClick}
+                            className={`nav-link has-dropdown ${
+                                dropdownOpen ? "show" : ""
+                            }`}
                         >
                             <i className="fas fa-fire"></i>
                             <span>Module 1</span>
                         </a>
                         <ul
                             className={`dropdown-menu ${
-                                isDropdownOpen ? "show" : ""
+                                dropdownOpen ? "show" : ""
                             }`}
-                            onClick={closeDropdown}
                         >
                             <li
                                 className={`nav-item ${
@@ -59,10 +76,7 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink
-                                    href="/general-feature"
-                                    onClick={closeDropdown}
-                                >
+                                <NavLink href="/general-feature">
                                     General Feature
                                 </NavLink>
                             </li>
@@ -73,10 +87,7 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink
-                                    href="/advanced-feature"
-                                    onClick={closeDropdown}
-                                >
+                                <NavLink href="/advanced-feature">
                                     Advanced Feature
                                 </NavLink>
                             </li>
@@ -87,12 +98,7 @@ export default function Sidebar() {
                                         : ""
                                 }`}
                             >
-                                <NavLink
-                                    href="/products"
-                                    onClick={closeDropdown}
-                                >
-                                    Products
-                                </NavLink>
+                                <NavLink href="/products">Products</NavLink>
                             </li>
                         </ul>
                     </li>
