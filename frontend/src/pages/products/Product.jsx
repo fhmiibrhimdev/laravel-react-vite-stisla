@@ -8,16 +8,20 @@ import { debounce } from "lodash";
 import { Link } from "react-router-dom";
 
 export default function Product() {
+    const baseURL = "http://127.0.0.1:8000/api";
+
     const [products, setProducts] = useState([]);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
+
     const [searchTerm, setSearchTerm] = useState("");
     const [searchTermDebounced, setSearchTermDebounced] = useState("");
     const [showing, setShowing] = useState(10);
-    const MySwal = withReactContent(Swal);
 
-    const baseURL = "http://127.0.0.1:8000/api";
+    const [shouldRefetch, setShouldRefetch] = useState(false);
+    const MySwal = withReactContent(Swal);
 
     useEffect(() => {
         document.title = "Products";
@@ -33,7 +37,62 @@ export default function Product() {
             .catch((error) => {
                 console.log(error);
             });
-    }, [currentPage, showing, searchTermDebounced]);
+    }, [currentPage, showing, searchTermDebounced, shouldRefetch]);
+
+    /**
+     * Initial form, reset input fields, and validate the form
+     */
+
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        price: "",
+    });
+
+    const initialFormData = {
+        name: "",
+        description: "",
+        price: "",
+    };
+
+    const [formErrors, setFormErrors] = useState({
+        name: "",
+        description: "",
+        price: "",
+    });
+
+    const validateForm = () => {
+        let errors = {};
+        let formIsValid = true;
+
+        // Validate input name
+        if (!formData.name) {
+            formIsValid = false;
+            errors.name = "Name is required";
+        }
+
+        // Validate input description
+        if (!formData.description) {
+            formIsValid = false;
+            errors.description = "Description is required";
+        }
+
+        // Validate input price
+        if (!formData.price) {
+            formIsValid = false;
+            errors.price = "Price is required";
+        } else if (!/^\d+(\.\d{1,2})?$/.test(formData.price)) {
+            formIsValid = false;
+            errors.price = "Price is invalid";
+        }
+
+        setFormErrors(errors);
+        return formIsValid;
+    };
+
+    /**
+     * Handle searching, pagination, and showing data
+     */
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -56,6 +115,66 @@ export default function Product() {
         setShowing(parseInt(event.target.value));
     };
 
+    /**
+     * Handle insert request
+     */
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        if (validateForm()) {
+            axios
+                .post(`${baseURL}/products`, formData, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                .then((response) => {
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Data created successfully",
+                            icon: "success",
+                            timer: 1500,
+                        }).then(() => {
+                            $(".modal").modal("hide");
+                            setShouldRefetch(true); // refetch new data
+                            setFormData(initialFormData); // set initial value for input
+                        });
+                    } else {
+                        throw new Error("Network response was not ok");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+    };
+
+    /**
+     * Handle delete request
+     */
+
+    const handleConfirmationDelete = (id) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                handleDelete(id);
+            }
+        });
+    };
+
     const handleDelete = (id) => {
         axios
             .delete(`${baseURL}/products/${id}`)
@@ -72,6 +191,12 @@ export default function Product() {
             })
             .catch((error) => {
                 console.error("Error:", error);
+                MySwal.fire({
+                    title: "Oops...",
+                    html: "Something went wrong.",
+                    icon: "error",
+                    timer: 1500,
+                });
             });
     };
 
@@ -148,7 +273,7 @@ export default function Product() {
                                                     </Link>
                                                     <button
                                                         onClick={() =>
-                                                            handleDelete(
+                                                            handleConfirmationDelete(
                                                                 product.id
                                                             )
                                                         }
@@ -246,28 +371,26 @@ export default function Product() {
                     </div>
                 </div>
                 <button
-                    class="btn-modal"
+                    className="btn-modal"
                     data-toggle="modal"
-                    data-target="#tambahDataModal"
+                    data-target="#addDataModal"
                 >
-                    <i class="far fa-plus"></i>
+                    <i className="far fa-plus"></i>
                 </button>
             </div>
+
+            {/* Modal Add */}
             <div
                 className="modal fade"
-                data-backdrop="false"
-                id="tambahDataModal"
-                aria-labelledby="tambahDataModalLabel"
+                id="addDataModal"
+                aria-labelledby="addDataModalLabel"
                 aria-hidden="true"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5
-                                className="modal-title"
-                                id="tambahDataModalLabel"
-                            >
-                                Tambah Data
+                            <h5 className="modal-title" id="addDataModalLabel">
+                                Add Data
                             </h5>
                             <button
                                 type="button"
@@ -278,16 +401,65 @@ export default function Product() {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label for="nama_kategori">Kategori</label>
+                                    <label htmlFor="name">Product name</label>
                                     <input
                                         type="text"
-                                        wire:model="nama_kategori"
-                                        id="nama_kategori"
-                                        className="form-control"
+                                        name="name"
+                                        id="name"
+                                        className={`form-control ${
+                                            formErrors.name ? "is-invalid" : ""
+                                        }`}
+                                        value={formData.name}
+                                        onChange={handleInputChange}
                                     />
+                                    {formErrors.name && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.name}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="description">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        name="description"
+                                        id="description"
+                                        className={`form-control ${
+                                            formErrors.description
+                                                ? "is-invalid"
+                                                : ""
+                                        }`}
+                                        style={{ height: 100 }}
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                    ></textarea>
+                                    {formErrors.description && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.description}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="price">Price</label>
+                                    <input
+                                        type="text"
+                                        name="price"
+                                        id="price"
+                                        className={`form-control ${
+                                            formErrors.price ? "is-invalid" : ""
+                                        }`}
+                                        value={formData.price}
+                                        onChange={handleInputChange}
+                                    />
+                                    {formErrors.price && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.price}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="modal-footer">

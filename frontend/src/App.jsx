@@ -10,9 +10,7 @@ export default function App() {
                 <div className="navbar-bg"></div>
                 <Navbar />
                 <Sidebar />
-                <main>
-                    <Router />
-                </main>
+                <Router />
                 <Footer />
             </div>
         </>
