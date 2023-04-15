@@ -18,6 +18,8 @@ This project is a web application built with Laravel, ReactJS with Vite, and Sti
 - Searching and pagination functionality
 - Single page application with React Router
 - Form validation with ReactJS validation rules
+- [NEW!] Authentication with JWT Token
+- [NEW!] Validation and sweetalert authentication
 
 ## Prerequisites
 

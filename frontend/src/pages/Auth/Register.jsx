@@ -123,7 +123,7 @@ export default function Register() {
             <div className="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4 tw-mt-10">
                 <div className="card card-primary">
                     <div className="card-header">
-                        <h4>Login</h4>
+                        <h4>Register</h4>
                     </div>
                     <div className="card-body">
                         <form onSubmit={registerHandler}>
