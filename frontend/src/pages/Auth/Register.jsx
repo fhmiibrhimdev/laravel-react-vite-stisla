@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 import axios from "axios";
+import AuthLayout from "../Layout/AuthLayout";
 
 export default function Register() {
     const baseURL = "http://127.0.0.1:8000/api";
@@ -99,7 +100,20 @@ export default function Register() {
                     }
                 })
                 .catch((error) => {
-                    console.error("Error:", error);
+                    var err = error.response.data;
+                    if (err.email) {
+                        MySwal.fire({
+                            title: "Failed!",
+                            text: err.email,
+                            icon: "error",
+                        });
+                    } else if (err.password) {
+                        MySwal.fire({
+                            title: "Failed!",
+                            text: err.password,
+                            icon: "error",
+                        });
+                    }
                 });
         }
     };
@@ -111,7 +125,6 @@ export default function Register() {
                     <div className="card-header">
                         <h4>Login</h4>
                     </div>
-
                     <div className="card-body">
                         <form onSubmit={registerHandler}>
                             <div className="form-group">
@@ -180,7 +193,7 @@ export default function Register() {
                                 <div className="col-lg-6">
                                     <div className="form-group">
                                         <label htmlFor="password_confirmation">
-                                            Confirmation Password
+                                            Confirm Password
                                         </label>
                                         <input
                                             type="password"
@@ -210,7 +223,7 @@ export default function Register() {
                             <div className="form-group">
                                 <button
                                     type="submit"
-                                    className="btn btn-lg btn-block tw-bg-blue-500"
+                                    className="btn btn-lg btn-block tw-bg-blue-500 tw-text-white"
                                 >
                                     Register
                                 </button>

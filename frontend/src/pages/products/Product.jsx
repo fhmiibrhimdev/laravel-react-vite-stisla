@@ -252,318 +252,294 @@ export default function Product() {
     };
 
     return (
-        <MainLayout>
-            <Case>
-                <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">
-                    <h1 className="mb-1 tw-text-lg">Products</h1>
-                </div>
+        <Case>
+            <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">
+                <h1 className="mb-1 tw-text-lg">Products</h1>
+            </div>
 
-                <div className="section-body">
-                    <div className="card">
-                        <div className="card-body px-0">
-                            <h3>Tabel Products</h3>
-                            <div className="show-entries">
-                                <p className="show-entries-show">Show</p>
-                                <select
-                                    id="length-data"
-                                    className="tw-p-1"
-                                    value={showing}
-                                    onChange={handleShow}
-                                >
-                                    <option value="1">1</option>
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                </select>
-                                <p className="show-entries-entries">Entries</p>
-                            </div>
-                            <div className="search-column">
-                                <p>Search: </p>
-                                <input
-                                    type="search"
-                                    id="search-data"
-                                    placeholder="Search here..."
-                                    className="form-control"
-                                    value={searchTerm}
-                                    onChange={handleSearch}
-                                />
-                            </div>
-                            <div className="table-responsive tw-max-h-96">
-                                <table>
-                                    <thead className="tw-sticky tw-top-0">
-                                        <tr className="tw-text-gray-700">
-                                            <th
-                                                width="15%"
-                                                className="text-center"
-                                            >
-                                                No
-                                            </th>
-                                            <th>Name Product</th>
-                                            <th>Description</th>
-                                            <th>Price</th>
-                                            <th className="text-center">
-                                                <i className="fas fa-cog"></i>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {Array.isArray(products) &&
-                                        products.length ? (
-                                            products.map((product, index) => (
-                                                <tr key={index}>
-                                                    <td className="text-center">
-                                                        {index + 1}
-                                                    </td>
-                                                    <td>{product.name}</td>
-                                                    <td>
-                                                        {product.description}
-                                                    </td>
-                                                    <td>{product.price}</td>
-                                                    <td className="text-center">
-                                                        <button
-                                                            onClick={() =>
-                                                                handleEdit(
-                                                                    product.id
-                                                                )
-                                                            }
-                                                            className="btn btn-primary mr-2"
-                                                            data-toggle="modal"
-                                                            data-target="#formDataModal"
-                                                        >
-                                                            <i className="fas fa-edit"></i>
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleConfirmationDelete(
-                                                                    product.id
-                                                                )
-                                                            }
-                                                            className="btn btn-danger"
-                                                        >
-                                                            <i className="fas fa-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td
-                                                    colSpan="5"
-                                                    className="text-center"
-                                                >
-                                                    Not data available in the
-                                                    table
+            <div className="section-body">
+                <div className="card">
+                    <div className="card-body px-0">
+                        <h3>Tabel Products</h3>
+                        <div className="show-entries">
+                            <p className="show-entries-show">Show</p>
+                            <select
+                                id="length-data"
+                                className="tw-p-1"
+                                value={showing}
+                                onChange={handleShow}
+                            >
+                                <option value="1">1</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <p className="show-entries-entries">Entries</p>
+                        </div>
+                        <div className="search-column">
+                            <p>Search: </p>
+                            <input
+                                type="search"
+                                id="search-data"
+                                placeholder="Search here..."
+                                className="form-control"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
+                        </div>
+                        <div className="table-responsive tw-max-h-96">
+                            <table>
+                                <thead className="tw-sticky tw-top-0">
+                                    <tr className="tw-text-gray-700">
+                                        <th width="15%" className="text-center">
+                                            No
+                                        </th>
+                                        <th>Name Product</th>
+                                        <th>Description</th>
+                                        <th>Price</th>
+                                        <th className="text-center">
+                                            <i className="fas fa-cog"></i>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Array.isArray(products) &&
+                                    products.length ? (
+                                        products.map((product, index) => (
+                                            <tr key={index}>
+                                                <td className="text-center">
+                                                    {index + 1}
                                                 </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {/* Pagination and showing data */}
-                            <div className="d-flex justify-content-between align-items-center mt-4 p-3 table-responsive">
-                                <div>
-                                    Showing {(currentPage - 1) * showing + 1} to{" "}
-                                    {Math.min(
-                                        currentPage * showing,
-                                        totalProducts
-                                    )}{" "}
-                                    of {totalProducts} results
-                                </div>
-                                <div>
-                                    <ul className="pagination">
-                                        <li
-                                            className={`page-item ${
-                                                currentPage === 1
-                                                    ? "disabled"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <button
-                                                className="page-link"
-                                                onClick={() =>
-                                                    handlePageChange(
-                                                        currentPage - 1
-                                                    )
-                                                }
-                                                disabled={currentPage === 1}
-                                            >
-                                                Prev
-                                            </button>
-                                        </li>
-                                        {Array.from(
-                                            { length: totalPages },
-                                            (_, i) => (
-                                                <li
-                                                    key={i}
-                                                    className={`page-item ${
-                                                        i + 1 === currentPage
-                                                            ? "active"
-                                                            : ""
-                                                    }`}
-                                                >
+                                                <td>{product.name}</td>
+                                                <td>{product.description}</td>
+                                                <td>{product.price}</td>
+                                                <td className="text-center">
                                                     <button
-                                                        className="page-link"
                                                         onClick={() =>
-                                                            handlePageChange(
-                                                                i + 1
+                                                            handleEdit(
+                                                                product.id
                                                             )
                                                         }
+                                                        className="btn btn-primary mr-2"
+                                                        data-toggle="modal"
+                                                        data-target="#formDataModal"
                                                     >
-                                                        {i + 1}
+                                                        <i className="fas fa-edit"></i>
                                                     </button>
-                                                </li>
-                                            )
-                                        )}
-                                        <li
-                                            className={`page-item ${
-                                                currentPage === totalPages
-                                                    ? "disabled"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <button
-                                                className="page-link"
-                                                onClick={() =>
-                                                    handlePageChange(
-                                                        currentPage + 1
-                                                    )
-                                                }
-                                                disabled={
-                                                    currentPage === totalPages
-                                                }
+                                                    <button
+                                                        onClick={() =>
+                                                            handleConfirmationDelete(
+                                                                product.id
+                                                            )
+                                                        }
+                                                        className="btn btn-danger"
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan="5"
+                                                className="text-center"
                                             >
-                                                Next
-                                            </button>
-                                        </li>
-                                    </ul>
+                                                Not data available in the table
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* Pagination and showing data */}
+                        <div className="d-flex justify-content-between align-items-center mt-4 p-3 table-responsive">
+                            <div>
+                                Showing {(currentPage - 1) * showing + 1} to{" "}
+                                {Math.min(currentPage * showing, totalProducts)}{" "}
+                                of {totalProducts} results
+                            </div>
+                            <div>
+                                <ul className="pagination">
+                                    <li
+                                        className={`page-item ${
+                                            currentPage === 1 ? "disabled" : ""
+                                        }`}
+                                    >
+                                        <button
+                                            className="page-link"
+                                            onClick={() =>
+                                                handlePageChange(
+                                                    currentPage - 1
+                                                )
+                                            }
+                                            disabled={currentPage === 1}
+                                        >
+                                            Prev
+                                        </button>
+                                    </li>
+                                    {Array.from(
+                                        { length: totalPages },
+                                        (_, i) => (
+                                            <li
+                                                key={i}
+                                                className={`page-item ${
+                                                    i + 1 === currentPage
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <button
+                                                    className="page-link"
+                                                    onClick={() =>
+                                                        handlePageChange(i + 1)
+                                                    }
+                                                >
+                                                    {i + 1}
+                                                </button>
+                                            </li>
+                                        )
+                                    )}
+                                    <li
+                                        className={`page-item ${
+                                            currentPage === totalPages
+                                                ? "disabled"
+                                                : ""
+                                        }`}
+                                    >
+                                        <button
+                                            className="page-link"
+                                            onClick={() =>
+                                                handlePageChange(
+                                                    currentPage + 1
+                                                )
+                                            }
+                                            disabled={
+                                                currentPage === totalPages
+                                            }
+                                        >
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        {/* Pagination and showing data */}
+                    </div>
+                </div>
+                <button
+                    className="btn-modal"
+                    data-toggle="modal"
+                    data-target="#formDataModal"
+                    onClick={handleAdd}
+                >
+                    <i className="far fa-plus"></i>
+                </button>
+            </div>
+
+            <div
+                className="modal fade"
+                id="formDataModal"
+                aria-labelledby="formDataModalLabel"
+                aria-hidden="true"
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="formDataModalLabel">
+                                {isEditing ? "Edit Data" : "Add Data"}
+                            </h5>
+                            <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label htmlFor="name">Product name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        id="name"
+                                        className={`form-control ${
+                                            formErrors.name ? "is-invalid" : ""
+                                        }`}
+                                        value={formData.name || ""}
+                                        onChange={handleInputChange}
+                                    />
+                                    {formErrors.name && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.name}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="description">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        name="description"
+                                        id="description"
+                                        className={`form-control ${
+                                            formErrors.description
+                                                ? "is-invalid"
+                                                : ""
+                                        }`}
+                                        style={{ height: 100 }}
+                                        value={formData.description || ""}
+                                        onChange={handleInputChange}
+                                    ></textarea>
+                                    {formErrors.description && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.description}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="price">Price</label>
+                                    <input
+                                        type="text"
+                                        name="price"
+                                        id="price"
+                                        className={`form-control ${
+                                            formErrors.price ? "is-invalid" : ""
+                                        }`}
+                                        value={formData.price || ""}
+                                        onChange={handleInputChange}
+                                    />
+                                    {formErrors.price && (
+                                        <div className="invalid-feedback">
+                                            {formErrors.price}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                            {/* Pagination and showing data */}
-                        </div>
-                    </div>
-                    <button
-                        className="btn-modal"
-                        data-toggle="modal"
-                        data-target="#formDataModal"
-                        onClick={handleAdd}
-                    >
-                        <i className="far fa-plus"></i>
-                    </button>
-                </div>
-
-                <div
-                    className="modal fade"
-                    id="formDataModal"
-                    aria-labelledby="formDataModalLabel"
-                    aria-hidden="true"
-                >
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5
-                                    className="modal-title"
-                                    id="formDataModalLabel"
-                                >
-                                    {isEditing ? "Edit Data" : "Add Data"}
-                                </h5>
+                            <div className="modal-footer">
                                 <button
                                     type="button"
-                                    className="close"
+                                    className="btn btn-secondary tw-bg-gray-300"
                                     data-dismiss="modal"
-                                    aria-label="Close"
                                 >
-                                    <span aria-hidden="true">&times;</span>
+                                    Close
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary tw-bg-blue-500"
+                                >
+                                    Save Data
                                 </button>
                             </div>
-                            <form onSubmit={handleSubmit}>
-                                <div className="modal-body">
-                                    <div className="form-group">
-                                        <label htmlFor="name">
-                                            Product name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            id="name"
-                                            className={`form-control ${
-                                                formErrors.name
-                                                    ? "is-invalid"
-                                                    : ""
-                                            }`}
-                                            value={formData.name || ""}
-                                            onChange={handleInputChange}
-                                        />
-                                        {formErrors.name && (
-                                            <div className="invalid-feedback">
-                                                {formErrors.name}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="description">
-                                            Description
-                                        </label>
-                                        <textarea
-                                            name="description"
-                                            id="description"
-                                            className={`form-control ${
-                                                formErrors.description
-                                                    ? "is-invalid"
-                                                    : ""
-                                            }`}
-                                            style={{ height: 100 }}
-                                            value={formData.description || ""}
-                                            onChange={handleInputChange}
-                                        ></textarea>
-                                        {formErrors.description && (
-                                            <div className="invalid-feedback">
-                                                {formErrors.description}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="price">Price</label>
-                                        <input
-                                            type="text"
-                                            name="price"
-                                            id="price"
-                                            className={`form-control ${
-                                                formErrors.price
-                                                    ? "is-invalid"
-                                                    : ""
-                                            }`}
-                                            value={formData.price || ""}
-                                            onChange={handleInputChange}
-                                        />
-                                        {formErrors.price && (
-                                            <div className="invalid-feedback">
-                                                {formErrors.price}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="modal-footer">
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary tw-bg-gray-300"
-                                        data-dismiss="modal"
-                                    >
-                                        Close
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="btn btn-primary tw-bg-blue-500"
-                                    >
-                                        Save Data
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
-            </Case>
-        </MainLayout>
+            </div>
+        </Case>
     );
 }

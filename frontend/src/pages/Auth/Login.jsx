@@ -5,8 +5,9 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 import axios from "axios";
+import AuthLayout from "../Layout/AuthLayout";
 
-export default function Register() {
+export default function Login() {
     const baseURL = "http://127.0.0.1:8000/api";
 
     const navigate = useNavigate();
@@ -86,7 +87,11 @@ export default function Register() {
                     }
                 })
                 .catch((error) => {
-                    console.error("Error:", error);
+                    MySwal.fire({
+                        title: "Failed!",
+                        text: error.response.data.message,
+                        icon: "error",
+                    });
                 });
         }
     };
@@ -98,7 +103,6 @@ export default function Register() {
                     <div className="card-header">
                         <h4>Login</h4>
                     </div>
-
                     <div className="card-body">
                         <form onSubmit={loginHandler}>
                             <div className="form-group">
@@ -141,7 +145,7 @@ export default function Register() {
                             <div className="form-group">
                                 <button
                                     type="submit"
-                                    className="btn btn-lg btn-block tw-bg-blue-500"
+                                    className="btn btn-lg btn-block tw-bg-blue-500 tw-text-white"
                                 >
                                     Login
                                 </button>
