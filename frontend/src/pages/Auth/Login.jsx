@@ -80,7 +80,7 @@ export default function Login() {
                             icon: "success",
                             timer: 1500,
                         }).then(() => {
-                            navigate("/dashboard");
+                            window.location.href = "/dashboard";
                         });
                     } else {
                         throw new Error("Network response was not ok");
