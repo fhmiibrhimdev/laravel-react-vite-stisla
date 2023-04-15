@@ -6,13 +6,7 @@ import Footer from "./components/Footer";
 export default function App() {
     return (
         <>
-            <div className="main-wrapper container">
-                <div className="navbar-bg"></div>
-                <Navbar />
-                <Sidebar />
-                <Router />
-                <Footer />
-            </div>
+            <Router />
         </>
     );
 }

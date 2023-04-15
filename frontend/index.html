@@ -42,9 +42,13 @@
         <script src="src/assets/stisla/js/stisla.js"></script>
         <script src="src/assets/stisla/js/scripts.js"></script>
         <script>
-            window.onbeforeunload = function () {
-                window.scrollTo(5, 75);
-            };
+            pathname = window.location.pathname;
+            if (pathname == "/login" || pathname == "/register") {
+            } else {
+                window.onbeforeunload = function () {
+                    window.scrollTo(5, 75);
+                };
+            }
         </script>
         <script src="src/assets/stisla/js/custom.js"></script>
     </body>

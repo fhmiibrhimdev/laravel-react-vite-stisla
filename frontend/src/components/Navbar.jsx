@@ -1,9 +1,40 @@
 import React from "react";
-import Case from "./Case";
-import NavLink from "./NavLink";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import axios from "axios";
 
 export default function Navbar() {
+    const [user, setUser] = useState({});
+    const baseURL = "http://127.0.0.1:8000/api";
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = "Dashboard";
+        if (!token) {
+            navigate("/");
+        }
+        fetchData();
+    }, []);
+
+    const token = localStorage.getItem("token");
+
+    const fetchData = async () => {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        await axios.get(`${baseURL}/user`).then((response) => {
+            setUser(response.data);
+        });
+    };
+
+    const logoutHandler = async () => {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        await axios.post(`${baseURL}/logout`).then(() => {
+            localStorage.removeItem("token");
+            navigate("/");
+        });
+    };
+
     return (
         <nav className="navbar navbar-expand-lg main-navbar">
             <Link to="/" className="navbar-brand sidebar-gone-hide">
@@ -27,7 +58,7 @@ export default function Navbar() {
                         className="nav-link dropdown-toggle nav-link-lg nav-link-user"
                     >
                         <div className="d-sm-none d-lg-inline-block">
-                            Hi, Fahmi Ibrahim
+                            Hi, {user.name}
                         </div>
                     </a>
                     <div className="dropdown-menu dropdown-menu-right">
@@ -40,20 +71,9 @@ export default function Navbar() {
                         >
                             <i className="far fa-user"></i> Profile
                         </a>
-                        <a
-                            href="features-activities.html"
-                            className="dropdown-item has-icon"
-                        >
-                            <i className="fas fa-bolt"></i> Activities
-                        </a>
-                        <a
-                            href="features-settings.html"
-                            className="dropdown-item has-icon"
-                        >
-                            <i className="fas fa-cog"></i> Settings
-                        </a>
                         <div className="dropdown-divider"></div>
                         <a
+                            onClick={logoutHandler}
                             href="#"
                             className="dropdown-item has-icon text-danger"
                         >

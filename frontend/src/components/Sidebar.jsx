@@ -36,10 +36,10 @@ export default function Sidebar() {
                 <ul className="navbar-nav">
                     <li
                         className={`nav-item ${
-                            location.pathname === "/" ? "active" : ""
+                            location.pathname === "/dashboard" ? "active" : ""
                         }`}
                     >
-                        <NavLink href="/">
+                        <NavLink href="/dashboard">
                             <i className="far fa-home"></i>
                             <span>Dashboard</span>
                         </NavLink>
