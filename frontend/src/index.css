@@ -78,7 +78,7 @@
     }
 
     .card {
-        @apply tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg;
+        @apply tw-rounded-none tw-shadow-md tw-shadow-gray-300 lg:tw-rounded-lg;
     }
 
     .section-body {

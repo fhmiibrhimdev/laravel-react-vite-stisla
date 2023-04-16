@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GalleryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -26,6 +27,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
     Route::resource('/products', ProductController::class);
+    Route::resource('/gallery', GalleryController::class);
 });
 
 Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');

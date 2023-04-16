@@ -3,13 +3,14 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import AdvancedFeature from "../pages/AdvancedFeature";
 import GeneralFeature from "../pages/GeneralFeature";
-import Product from "../pages/products/Product";
+import Product from "../pages/Products/Product";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import AuthLayout from "../pages/Layout/AuthLayout";
 import MainLayout from "../pages/Layout/MainLayout";
 import Error403 from "../pages/Error/403";
 import Error404 from "../pages/Error/404";
+import Gallery from "../pages/Gallery/Gallery";
 
 export default function Router() {
     return (
@@ -66,6 +67,15 @@ export default function Router() {
                 element={
                     <MainLayout>
                         <Product />
+                    </MainLayout>
+                }
+            />
+            <Route
+                exact
+                path="/gallery"
+                element={
+                    <MainLayout>
+                        <Gallery />
                     </MainLayout>
                 }
             />

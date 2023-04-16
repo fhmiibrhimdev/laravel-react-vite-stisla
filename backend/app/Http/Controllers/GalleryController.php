@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Exception;
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
-class ProductController extends Controller
+class GalleryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,9 +21,9 @@ class ProductController extends Controller
             $perPage = $request->get('showing', 10);
             $search = $request->get('search', '');
 
-            $data = Product::where(function($query) use ($search) {
-                        $query->where('name', 'LIKE', "%{$search}%");
-                        $query->orWhere('description', 'LIKE', "%{$search}%");
+            $data = Gallery::where(function($query) use ($search) {
+                        $query->where('name_gallery', 'LIKE', "%{$search}%");
+                        $query->orWhere('description_gallery', 'LIKE', "%{$search}%");
                     })->latest()->paginate($perPage);
 
             return response()->json([
@@ -44,15 +46,29 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'description' => '',
-            'price' => 'numeric'
+        $validatedData = Validator::make($request->all(), [
+            'name_gallery'          => 'required',
+            'description_gallery'   => '',
+            'image'                 => 'image|mimes:jpg,jpeg,png|max:3072'
         ]);
 
         try 
         {
-            $data   = Product::create($validatedData);
+            if ($validatedData->fails()){
+                return response()->json(['success' => false, 'message' => $validatedData->errors()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/images', $filename);
+            }
+
+            $data   = Gallery::create([
+                'name_gallery'          => $request->input('name_gallery'),
+                'description_gallery'   => $request->input('description_gallery'),
+                'image'                 => $filename
+            ]); 
 
             return response()->json([
                 'data'      => $data,
@@ -77,7 +93,7 @@ class ProductController extends Controller
     {
         try 
         {
-            $data   = Product::findOrFail($id);
+            $data   = Gallery::findOrFail($id);
 
             return response()->json([
                 'data'      => $data,
@@ -101,7 +117,7 @@ class ProductController extends Controller
     {
         try 
         {
-            $data   = Product::findOrFail($id);
+            $data   = Gallery::findOrFail($id);
 
             return response()->json([
                 'data'      => $data,
@@ -125,8 +141,32 @@ class ProductController extends Controller
     {
         try 
         {
-            $data   = Product::findOrFail($id)->update($request->all());
+            $data   = Gallery::findOrFail($id);
+            $filename = $data->image;
 
+            if ($request->hasFile('image')) {
+                $validatedData = Validator::make($request->all(), [
+                    'name_gallery'  => 'required',
+                    'image'         => 'image|mimes:jpg,jpeg,png|max:3072'
+                ]);
+                
+                if ($validatedData->fails()){
+                    return response()->json(['success' => false, 'message' => $validatedData->errors()], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+                }
+
+                Storage::delete('public/images/' . $filename);
+        
+                $image = $request->file('image');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/images', $filename);
+            }
+
+            $data->update([
+                'name_gallery'          => $request->input('name_gallery'),
+                'description_gallery'   => $request->input('description_gallery'),
+                'image'                 => $filename
+            ]);
+        
             return response()->json([
                 'data'      => $data,
                 'success'   => true,
@@ -150,7 +190,13 @@ class ProductController extends Controller
     {
         try 
         {
-            $data   = Product::findOrFail($id)->delete();
+            $data   = Gallery::findOrFail($id);
+
+            if ($data->image) {
+                Storage::delete('public/images/' . $data->image);
+            }
+
+            $data->delete();
 
             return response()->json([
                 'data'      => $data,

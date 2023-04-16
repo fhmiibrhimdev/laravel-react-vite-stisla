@@ -8,12 +8,13 @@ import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
 
-export default function Product() {
-    const baseURL = "http://127.0.0.1:8000/api";
+export default function Gallery() {
+    const baseURL = "http://127.0.0.1:8000/";
+    const baseurlAPI = "http://127.0.0.1:8000/api";
 
     const navigate = useNavigate();
 
-    const [rows, setRows] = useState([]);
+    const [rows, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -28,13 +29,13 @@ export default function Product() {
     const MySwal = withReactContent(Swal);
 
     useEffect(() => {
-        document.title = "Products";
+        document.title = "Gallery";
         axios
             .get(
-                `${baseURL}/products?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
+                `${baseurlAPI}/gallery?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
             )
             .then((data) => {
-                setRows(data.data.data.data);
+                setProducts(data.data.data.data);
                 setTotalPages(data.data.data.last_page);
                 setTotalRows(data.data.data.total);
                 setIsLoading(false);
@@ -57,21 +58,21 @@ export default function Product() {
      */
 
     const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        price: "",
+        name_gallery: "",
+        description_gallery: "",
+        image: null,
     });
 
     const initialFormData = {
-        name: "",
-        description: "",
-        price: "",
+        name_gallery: "",
+        description_gallery: "",
+        image: null,
     };
 
     const [formErrors, setFormErrors] = useState({
-        name: "",
-        description: "",
-        price: "",
+        name_gallery: "",
+        description_gallery: "",
+        image: null,
     });
 
     const validateForm = () => {
@@ -79,24 +80,9 @@ export default function Product() {
         let formIsValid = true;
 
         // Validate input name
-        if (!formData.name) {
+        if (!formData.name_gallery) {
             formIsValid = false;
-            errors.name = "Name is required";
-        }
-
-        // Validate input description
-        if (!formData.description) {
-            formIsValid = false;
-            errors.description = "Description is required";
-        }
-
-        // Validate input price
-        if (!formData.price) {
-            formIsValid = false;
-            errors.price = "Price is required";
-        } else if (!/^\d+(\.\d{1,2})?$/.test(formData.price)) {
-            formIsValid = false;
-            errors.price = "Price is invalid";
+            errors.name_gallery = "Name gallery is required";
         }
 
         setFormErrors(errors);
@@ -142,9 +128,9 @@ export default function Product() {
         const data = rows.find((row) => row.id === id);
         setModalData(data);
         setFormData({
-            name: data.name,
-            description: data.description,
-            price: data.price,
+            name_gallery: data.name_gallery,
+            description_gallery: data.description_gallery,
+            image: null,
         });
         setIsEditing(true);
     };
@@ -154,15 +140,19 @@ export default function Product() {
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleFileChange = (event) => {
+        setFormData({ ...formData, image: event.target.files[0] });
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
 
         if (!isEditing) {
             if (validateForm()) {
                 axios
-                    .post(`${baseURL}/products`, formData, {
+                    .post(`${baseurlAPI}/gallery`, formData, {
                         headers: {
-                            "Content-Type": "application/json",
+                            "Content-Type": "multipart/form-data",
                         },
                     })
                     .then((response) => {
@@ -174,8 +164,8 @@ export default function Product() {
                                 timer: 1500,
                             }).then(() => {
                                 $(".modal").modal("hide");
-                                setRefetch(Math.random()); // refetch new data
-                                setFormData(initialFormData); // set initial value for input
+                                setRefetch(Math.random());
+                                setFormData(initialFormData);
                             });
                         } else {
                             throw new Error("Network response was not ok");
@@ -193,10 +183,18 @@ export default function Product() {
             }
         } else {
             if (validateForm()) {
+                const data = new FormData();
+                data.append("name_gallery", formData.name_gallery);
+                data.append(
+                    "description_gallery",
+                    formData.description_gallery
+                );
+                data.append("image", formData.image);
+                data.append("_method", "put");
                 axios
-                    .put(`${baseURL}/products/${modalData.id}`, formData, {
+                    .post(`${baseurlAPI}/gallery/${modalData.id}`, data, {
                         headers: {
-                            "Content-Type": "application/json",
+                            "Content-Type": "multipart/form-data",
                         },
                     })
                     .then((response) => {
@@ -250,10 +248,10 @@ export default function Product() {
 
     const handleDelete = (id) => {
         axios
-            .delete(`${baseURL}/products/${id}`)
+            .delete(`${baseurlAPI}/gallery/${id}`)
             .then((data) => {
                 console.log("Success:", data);
-                setRows(rows.filter((row) => row.id !== id));
+                setProducts(rows.filter((row) => row.id !== id));
                 setTotalRows(totalRows - 1);
                 MySwal.fire({
                     title: "Successfully!",
@@ -286,13 +284,13 @@ export default function Product() {
     return (
         <Case>
             <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">
-                <h1 className="mb-1 tw-text-lg">Products</h1>
+                <h1 className="mb-1 tw-text-lg">Gallery</h1>
             </div>
 
             <div className="section-body">
                 <div className="card">
                     <div className="card-body px-0">
-                        <h3>Tabel Products</h3>
+                        <h3>Table Gallery</h3>
                         <div className="show-entries">
                             <p className="show-entries-show">Show</p>
                             <select
@@ -325,12 +323,12 @@ export default function Product() {
                             <table>
                                 <thead className="tw-sticky tw-top-0">
                                     <tr className="tw-text-gray-700">
-                                        <th width="15%" className="text-center">
+                                        <th width="10%" className="text-center">
                                             No
                                         </th>
-                                        <th>Name Product</th>
+                                        <th width="10%">Image</th>
+                                        <th>Name Gallery</th>
                                         <th>Description</th>
-                                        <th>Price</th>
                                         <th className="text-center">
                                             <i className="fas fa-cog"></i>
                                         </th>
@@ -343,9 +341,29 @@ export default function Product() {
                                                 <td className="text-center">
                                                     {index + 1}
                                                 </td>
-                                                <td>{row.name}</td>
-                                                <td>{row.description}</td>
-                                                <td>{row.price}</td>
+                                                <td>
+                                                    <a
+                                                        href={
+                                                            baseURL +
+                                                            "storage/images/" +
+                                                            row.image
+                                                        }
+                                                        target="_BLANK"
+                                                    >
+                                                        <img
+                                                            className="tw-aspect-square tw-w-4/6 tw-rounded-lg"
+                                                            src={
+                                                                baseURL +
+                                                                "storage/images/" +
+                                                                row.image
+                                                            }
+                                                        />
+                                                    </a>
+                                                </td>
+                                                <td>{row.name_gallery}</td>
+                                                <td>
+                                                    {row.description_gallery}
+                                                </td>
                                                 <td className="text-center">
                                                     <button
                                                         onClick={() =>
@@ -489,65 +507,57 @@ export default function Product() {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit}>
+                        <form
+                            onSubmit={handleSubmit}
+                            encType="multipart/form-data"
+                        >
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label htmlFor="name">Product name</label>
+                                    <label htmlFor="image">Image</label>
                                     <input
-                                        type="text"
-                                        name="name"
-                                        id="name"
-                                        className={`form-control ${
-                                            formErrors.name ? "is-invalid" : ""
-                                        }`}
-                                        value={formData.name || ""}
-                                        onChange={handleInputChange}
+                                        type="file"
+                                        name="image"
+                                        id="image"
+                                        className="form-control"
+                                        onChange={handleFileChange}
                                     />
-                                    {formErrors.name && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.name}
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="description">
-                                        Description
+                                    <label htmlFor="name_gallery">
+                                        Name Gallery
                                     </label>
-                                    <textarea
-                                        name="description"
-                                        id="description"
+                                    <input
+                                        type="text"
+                                        name="name_gallery"
+                                        id="name_gallery"
                                         className={`form-control ${
-                                            formErrors.description
+                                            formErrors.name_gallery
                                                 ? "is-invalid"
                                                 : ""
                                         }`}
-                                        style={{ height: 100 }}
-                                        value={formData.description || ""}
+                                        value={formData.name_gallery || ""}
                                         onChange={handleInputChange}
-                                    ></textarea>
-                                    {formErrors.description && (
+                                    />
+                                    {formErrors.name_gallery && (
                                         <div className="invalid-feedback">
-                                            {formErrors.description}
+                                            {formErrors.name_gallery}
                                         </div>
                                     )}
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="price">Price</label>
-                                    <input
-                                        type="text"
-                                        name="price"
-                                        id="price"
-                                        className={`form-control ${
-                                            formErrors.price ? "is-invalid" : ""
-                                        }`}
-                                        value={formData.price || ""}
+                                    <label htmlFor="description_gallery">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        name="description_gallery"
+                                        id="description_gallery"
+                                        className="form-control"
+                                        style={{ height: 100 }}
+                                        value={
+                                            formData.description_gallery || ""
+                                        }
                                         onChange={handleInputChange}
-                                    />
-                                    {formErrors.price && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.price}
-                                        </div>
-                                    )}
+                                    ></textarea>
                                 </div>
                             </div>
                             <div className="modal-footer">

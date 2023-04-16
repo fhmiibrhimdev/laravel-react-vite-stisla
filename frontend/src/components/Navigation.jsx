@@ -127,7 +127,8 @@ export default function Navigation() {
                             className={`nav-item dropdown ${
                                 location.pathname === "/general-feature" ||
                                 location.pathname === "/advanced-feature" ||
-                                location.pathname === "/products"
+                                location.pathname === "/products" ||
+                                location.pathname === "/gallery"
                                     ? "active"
                                     : ""
                             }`}
@@ -172,17 +173,31 @@ export default function Navigation() {
                                     </NavLink>
                                 </li>
                                 {user.role === "admin" && (
-                                    <li
-                                        className={`nav-item ${
-                                            location.pathname === "/products"
-                                                ? "active"
-                                                : ""
-                                        }`}
-                                    >
-                                        <NavLink href="/products">
-                                            Products
-                                        </NavLink>
-                                    </li>
+                                    <>
+                                        <li
+                                            className={`nav-item ${
+                                                location.pathname ===
+                                                "/products"
+                                                    ? "active"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <NavLink href="/products">
+                                                Products
+                                            </NavLink>
+                                        </li>
+                                        <li
+                                            className={`nav-item ${
+                                                location.pathname === "/gallery"
+                                                    ? "active"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <NavLink href="/gallery">
+                                                Gallery
+                                            </NavLink>
+                                        </li>
+                                    </>
                                 )}
                             </ul>
                         </li>
