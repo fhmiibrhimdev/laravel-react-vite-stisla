@@ -19,15 +19,10 @@ class ProductController extends Controller
             $perPage = $request->get('showing', 10);
             $search = $request->get('search', '');
 
-            $query = Product::query();
-
-            if (!empty($search)) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
-            }
-
-            $data = $query->latest()->paginate($perPage);
-
+            $data = Product::where(function($query) use ($search) {
+                        $query->where('name', 'LIKE', "%{$search}%");
+                        $query->orWhere('description', 'LIKE', "%{$search}%");
+                    })->latest()->paginate($perPage);
 
             return response()->json([
                 'data'      => $data,
@@ -45,38 +40,24 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        try 
-        {
-            
-        } 
-        catch (Exception $e) 
-        {
-            return response()->json([
-                'data'      => [],
-                'success'   => false,
-                'message'   => $e->getMessage()
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);    
-        }
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'name' => 'required|max:5',
+            'price' => 'numeric'
+        ]);
+
         try 
         {
-            $data   = Product::create($request->all());
+            $data   = Product::create($validatedData);
 
             return response()->json([
                 'data'      => $data,
                 'success'   => true,
                 'message'   => 'Data created successfully'
-            ], JsonResponse::HTTP_OK);
+            ], JsonResponse::HTTP_CREATED);
         } 
         catch (Exception $e) 
         {

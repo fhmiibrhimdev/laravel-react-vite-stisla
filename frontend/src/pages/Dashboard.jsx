@@ -1,6 +1,5 @@
 import React from "react";
 import Case from "../components/Case";
-
 import { useEffect } from "react";
 
 export default function Dashboard() {

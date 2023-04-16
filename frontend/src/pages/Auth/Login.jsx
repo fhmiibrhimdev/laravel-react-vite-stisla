@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import withReactContent from "sweetalert2-react-content";
 
-import axios from "axios";
-import AuthLayout from "../Layout/AuthLayout";
+import { setTokenWithExpiration, getTokenWithExpiration } from "./Session";
 
 export default function Login() {
     const baseURL = "http://127.0.0.1:8000/api";
@@ -15,7 +14,7 @@ export default function Login() {
 
     useEffect(() => {
         document.title = "Login";
-        if (localStorage.getItem("token")) {
+        if (getTokenWithExpiration("token")) {
             //redirect page dashboard
             window.location.href = "/dashboard";
         }
@@ -73,7 +72,7 @@ export default function Login() {
                 })
                 .then((response) => {
                     if (response.status === 200) {
-                        localStorage.setItem("token", response.data.token);
+                        setTokenWithExpiration("token", response.data.token);
                         MySwal.fire({
                             title: "Success!",
                             text: "Login successfully",

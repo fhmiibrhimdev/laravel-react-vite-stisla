@@ -1,16 +1,16 @@
+import axios from "axios";
+import NavLink from "./NavLink";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import NavLink from "./NavLink";
-
-import axios from "axios";
+import { getTokenWithExpiration } from "../pages/Auth/Session";
 
 export default function Navigation() {
     const [user, setUser] = useState({});
     const baseURL = "http://127.0.0.1:8000/api";
 
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const token = getTokenWithExpiration("token");
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -88,14 +88,14 @@ export default function Navigation() {
                         </a>
                         <div className="dropdown-menu dropdown-menu-right">
                             <div className="dropdown-title">
-                                Logged in 5 min ago
+                                ROLE: {user.role}
                             </div>
-                            <a
-                                href="features-profile.html"
+                            <Link
+                                to="/profile"
                                 className="dropdown-item has-icon"
                             >
                                 <i className="far fa-user"></i> Profile
-                            </a>
+                            </Link>
                             <div className="dropdown-divider"></div>
                             <a
                                 onClick={logoutHandler}

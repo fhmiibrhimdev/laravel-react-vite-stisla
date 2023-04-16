@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-
-import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-
 import axios from "axios";
-import AuthLayout from "../Layout/AuthLayout";
+import Swal from "sweetalert2";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import withReactContent from "sweetalert2-react-content";
 
 export default function Register() {
     const baseURL = "http://127.0.0.1:8000/api";

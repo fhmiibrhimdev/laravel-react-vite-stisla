@@ -10,6 +10,7 @@ import AuthLayout from "../pages/Layout/AuthLayout";
 import MainLayout from "../pages/Layout/MainLayout";
 import Error403 from "../pages/Error/403";
 import Error404 from "../pages/Error/404";
+
 export default function Router() {
     return (
         <Routes>

@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
+import appConfig from "../../config/appConfig";
 
 export default function Product() {
     const baseURL = "http://127.0.0.1:8000/api";
@@ -113,7 +114,7 @@ export default function Product() {
     const handleSearchDebounced = useCallback(
         debounce((value) => {
             setSearchTermDebounced(value);
-        }, 750),
+        }, appConfig.debounceTimeout),
         []
     );
 
@@ -165,7 +166,7 @@ export default function Product() {
                         },
                     })
                     .then((response) => {
-                        if (response.status === 200) {
+                        if (response.status === 201) {
                             Swal.fire({
                                 title: "Success!",
                                 text: "Data created successfully",
@@ -173,8 +174,8 @@ export default function Product() {
                                 timer: 1500,
                             }).then(() => {
                                 $(".modal").modal("hide");
-                                setRefetch(Math.random()); // refetch new data
-                                setFormData(initialFormData); // set initial value for input
+                                setRefetch(Math.random());
+                                setFormData(initialFormData);
                             });
                         } else {
                             throw new Error("Network response was not ok");

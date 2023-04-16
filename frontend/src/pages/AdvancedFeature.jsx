@@ -1,7 +1,6 @@
 import React from "react";
 import Case from "../components/Case";
 import { useEffect } from "react";
-import MainLayout from "./Layout/MainLayout";
 
 export default function AdvancedFeature() {
     useEffect(() => {
