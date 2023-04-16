@@ -61,7 +61,7 @@ php artisan key:generate
 5. Run database migrations:
 
 ```
-php artisan migrate:fresh
+php artisan migrate:fresh --seed
 ```
 
 6. Install the dependencies for the ReactJS project:
