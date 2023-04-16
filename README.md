@@ -20,6 +20,8 @@ This project is a web application built with Laravel, ReactJS with Vite, and Sti
 - Form validation with ReactJS validation rules
 - [NEW!] Authentication with JWT Token
 - [NEW!] Validation and sweetalert authentication
+- [NEW!] Multiple authentication role REST API with laratrust!
+- [NEW!] Page: 404, 403.
 
 ## Prerequisites
 
