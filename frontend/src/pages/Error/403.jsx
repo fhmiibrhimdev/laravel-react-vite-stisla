@@ -15,7 +15,7 @@ export default function Error403() {
                                 </div>
                                 <div class="page-search">
                                     <div class="mt-3">
-                                        <a href="/">Back to Home</a>
+                                        <Link to="/">Back to Home</Link>
                                     </div>
                                 </div>
                             </div>

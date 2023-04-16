@@ -19,7 +19,9 @@ use App\Http\Controllers\ProductController;
 Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user(); $role = $user->hasRole('admin') ? 'admin' : 'user';
+    $user->setAttribute('role', $role);
+    return $user;
 });
 
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
