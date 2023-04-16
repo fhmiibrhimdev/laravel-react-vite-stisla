@@ -1,7 +1,13 @@
 import React from "react";
 import Case from "../components/Case";
 
+import { useEffect } from "react";
+
 export default function Dashboard() {
+    useEffect(() => {
+        document.title = "Dashboard";
+    });
+
     return (
         <Case>
             <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">

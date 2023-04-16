@@ -8,63 +8,67 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import AuthLayout from "../pages/Layout/AuthLayout";
 import MainLayout from "../pages/Layout/MainLayout";
+import Error403 from "../pages/Error/403";
+import Error404 from "../pages/Error/404";
 export default function Router() {
     return (
         <Routes>
+            <Route path="/403" element={<Error403 />} />
             <Route
+                exact
                 path="/"
                 element={
                     <AuthLayout>
                         <Login />
                     </AuthLayout>
                 }
-                exact
             />
             <Route
+                exact
                 path="/register"
                 element={
                     <AuthLayout>
                         <Register />
                     </AuthLayout>
                 }
-                exact
             />
             <Route
+                exact
                 path="/dashboard"
                 element={
                     <MainLayout>
                         <Dashboard />
                     </MainLayout>
                 }
-                exact
             />
             <Route
+                exact
                 path="/general-feature"
                 element={
                     <MainLayout>
                         <GeneralFeature />
                     </MainLayout>
                 }
-                exact
             />
             <Route
+                exact
                 path="/advanced-feature"
                 element={
                     <MainLayout>
                         <AdvancedFeature />
                     </MainLayout>
                 }
-                exact
             />
             <Route
+                exact
                 path="/products"
                 element={
                     <MainLayout>
                         <Product />
                     </MainLayout>
                 }
-                exact
             />
+            <Route path="*" element={<Error404 />} />
         </Routes>
     );
 }

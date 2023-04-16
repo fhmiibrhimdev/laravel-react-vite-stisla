@@ -22,6 +22,7 @@ export default function Register() {
         email: "",
         password: "",
         password_confirmation: "",
+        role: "",
     });
 
     const initialFormData = {
@@ -29,6 +30,7 @@ export default function Register() {
         email: "",
         password: "",
         password_confirmation: "",
+        role: "",
     };
 
     const [formErrors, setFormErrors] = useState({
@@ -36,6 +38,7 @@ export default function Register() {
         email: "",
         password: "",
         password_confirmation: "",
+        role: "",
     });
 
     const validateForm = () => {
@@ -64,6 +67,12 @@ export default function Register() {
         if (!formData.password_confirmation) {
             formIsValid = false;
             errors.password_confirmation = "Confirmation Password is required";
+        }
+
+        // Validate input description
+        if (!formData.role) {
+            formIsValid = false;
+            errors.role = "Role is required";
         }
 
         setFormErrors(errors);
@@ -220,6 +229,31 @@ export default function Register() {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="form-group">
+                                <label htmlFor="role">Role user</label>
+                                <select
+                                    name="role"
+                                    id="role"
+                                    className={`form-control ${
+                                        formErrors.role ? "is-invalid" : ""
+                                    }`}
+                                    value={formData.role || ""}
+                                    onChange={handleInputChange}
+                                >
+                                    <option selected>
+                                        -- Selected Option --
+                                    </option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
+                                {formErrors.role && (
+                                    <div className="invalid-feedback">
+                                        {formErrors.role}
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="form-group">
                                 <button
                                     type="submit"

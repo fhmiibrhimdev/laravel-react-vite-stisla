@@ -36,11 +36,14 @@ class RegisterController extends Controller
             'password'  => bcrypt($request->password)
         ]);
 
+        $user->addRole($request->role);
+
         //return response JSON user is created
         if($user) {
             return response()->json([
                 'success' => true,
-                'user'    => $user,  
+                'user'    => $user,
+                'role'    => $request->role
             ], 201);
         }
 

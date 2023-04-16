@@ -5,12 +5,15 @@ import withReactContent from "sweetalert2-react-content";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { debounce } from "lodash";
-import MainLayout from "../Layout/MainLayout";
+import { useNavigate } from "react-router-dom";
 
 export default function Product() {
     const baseURL = "http://127.0.0.1:8000/api";
 
+    const navigate = useNavigate();
+
     const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -33,9 +36,15 @@ export default function Product() {
                 setProducts(data.data.data.data);
                 setTotalPages(data.data.data.last_page);
                 setTotalProducts(data.data.data.total);
+                setIsLoading(false);
             })
             .catch((error) => {
-                console.log(error);
+                if (error.response.status === 403) {
+                    navigate("/403");
+                } else {
+                    console.log(error);
+                }
+                setIsLoading(false);
             });
     }, [currentPage, showing, searchTermDebounced, refetch]);
 
@@ -250,6 +259,16 @@ export default function Product() {
                 });
             });
     };
+
+    if (isLoading) {
+        return (
+            <Case>
+                <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">
+                    <h1 className="mb-1 tw-text-lg">Loading...</h1>
+                </div>
+            </Case>
+        );
+    }
 
     return (
         <Case>

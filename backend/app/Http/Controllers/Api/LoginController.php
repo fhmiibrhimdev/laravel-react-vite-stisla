@@ -35,14 +35,24 @@ class LoginController extends Controller
         if(!$token = JWTAuth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email atau Password Anda salah'
+                'message' => 'Your email or password is wrong!'
             ], 401);
+        }
+
+        $user = auth()->user();
+
+        $role = '';
+        if ($user->hasRole('admin')) {
+            $role = 'admin';
+        } else if ($user->hasRole('user')) {
+            $role = 'user';
         }
 
         //if auth success
         return response()->json([
             'success' => true,
-            'user'    => auth()->user(),    
+            'user'    => $user,   
+            'role'    => $role, 
             'token'   => $token   
         ], 200);
     }

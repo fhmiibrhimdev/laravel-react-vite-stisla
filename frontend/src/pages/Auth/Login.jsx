@@ -17,7 +17,7 @@ export default function Login() {
         document.title = "Login";
         if (localStorage.getItem("token")) {
             //redirect page dashboard
-            navigate("/dashboard");
+            window.location.href = "/dashboard";
         }
     }, []);
 
