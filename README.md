@@ -64,27 +64,33 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 ```
 
-6. Install the dependencies for the ReactJS project:
+6. Run JWT Secret:
+
+```
+php artisan jwt:secret
+```
+
+7. Install the dependencies for the ReactJS project:
 
 ```
 cd ../frontend
 npm install
 ```
 
-7. Start the development server for the ReactJS project:
+8. Start the development server for the ReactJS project:
 
 ```
 npm run dev
 ```
 
-8. Start the development server for the Laravel project:
+9. Start the development server for the Laravel project:
 
 ```
 cd ../backend
 php artisan serve
 ```
 
-9. Visit [Localhost](http://localhost:5173/products) in your web browser to access the web application.
+10. Visit [Localhost](http://localhost:5173/products) in your web browser to access the web application.
 
 ## License
 
