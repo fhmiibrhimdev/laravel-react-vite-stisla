@@ -64,10 +64,11 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 ```
 
-6. Run JWT Secret:
+6. Run JWT Secret and Storage Link:
 
 ```
 php artisan jwt:secret
+php artisan storage:link
 ```
 
 7. Install the dependencies for the ReactJS project:
