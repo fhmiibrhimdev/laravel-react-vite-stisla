@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\PersonalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -23,6 +24,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     $user = $request->user(); $role = $user->hasRole('admin') ? 'admin' : 'user';
     $user->setAttribute('role', $role);
     return $user;
+});
+
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/user', function (Request $request) {
+        $user = $request->user(); $role = $user->hasRole('admin') ? 'admin' : 'user';
+        $user->setAttribute('role', $role);
+        return $user;
+    });
+    Route::get('/profile', [PersonalController::class, 'index']);
+    Route::put('/profile', [PersonalController::class, 'updateProfile']);
+    Route::put('/update-password', [PersonalController::class, 'updatePassword']);
 });
 
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {

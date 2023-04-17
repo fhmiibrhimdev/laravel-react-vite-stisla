@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
 
 export default function Product() {
-    const baseURL = "http://127.0.0.1:8000/api";
+    const baseURL = "http://127.0.0.1:8000/";
+    const baseurlAPI = "http://127.0.0.1:8000/api";
 
     const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ export default function Product() {
         document.title = "Products";
         axios
             .get(
-                `${baseURL}/products?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
+                `${baseurlAPI}/products?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
             )
             .then((data) => {
                 setRows(data.data.data.data);
@@ -160,7 +161,7 @@ export default function Product() {
         if (!isEditing) {
             if (validateForm()) {
                 axios
-                    .post(`${baseURL}/products`, formData, {
+                    .post(`${baseurlAPI}/products`, formData, {
                         headers: {
                             "Content-Type": "application/json",
                         },
@@ -194,7 +195,7 @@ export default function Product() {
         } else {
             if (validateForm()) {
                 axios
-                    .put(`${baseURL}/products/${modalData.id}`, formData, {
+                    .put(`${baseurlAPI}/products/${modalData.id}`, formData, {
                         headers: {
                             "Content-Type": "application/json",
                         },
@@ -250,7 +251,7 @@ export default function Product() {
 
     const handleDelete = (id) => {
         axios
-            .delete(`${baseURL}/products/${id}`)
+            .delete(`${baseurlAPI}/products/${id}`)
             .then((data) => {
                 console.log("Success:", data);
                 setRows(rows.filter((row) => row.id !== id));

@@ -11,6 +11,7 @@ import MainLayout from "../pages/Layout/MainLayout";
 import Error403 from "../pages/Error/403";
 import Error404 from "../pages/Error/404";
 import Gallery from "../pages/Gallery/Gallery";
+import Profile from "../pages/Profile/Profile";
 
 export default function Router() {
     return (
@@ -76,6 +77,15 @@ export default function Router() {
                 element={
                     <MainLayout>
                         <Gallery />
+                    </MainLayout>
+                }
+            />
+            <Route
+                exact
+                path="/profile"
+                element={
+                    <MainLayout>
+                        <Profile />
                     </MainLayout>
                 }
             />
