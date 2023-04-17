@@ -12,6 +12,7 @@ import Error403 from "../pages/Error/403";
 import Error404 from "../pages/Error/404";
 import Gallery from "../pages/Gallery/Gallery";
 import Profile from "../pages/Profile/Profile";
+import MultipleInsert from "../pages/MultipleInsert/MultipleInsert";
 
 export default function Router() {
     return (
@@ -86,6 +87,15 @@ export default function Router() {
                 element={
                     <MainLayout>
                         <Profile />
+                    </MainLayout>
+                }
+            />
+            <Route
+                exact
+                path="/multiple-insert"
+                element={
+                    <MainLayout>
+                        <MultipleInsert />
                     </MainLayout>
                 }
             />

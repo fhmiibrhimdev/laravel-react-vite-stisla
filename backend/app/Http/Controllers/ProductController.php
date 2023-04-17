@@ -22,6 +22,7 @@ class ProductController extends Controller
             $data = Product::where(function($query) use ($search) {
                         $query->where('name', 'LIKE', "%{$search}%");
                         $query->orWhere('description', 'LIKE', "%{$search}%");
+                        $query->orWhere('price', 'LIKE', "%{$search}%");
                     })->latest()->paginate($perPage);
 
             return response()->json([
@@ -56,6 +57,37 @@ class ProductController extends Controller
 
             return response()->json([
                 'data'      => $data,
+                'success'   => true,
+                'message'   => 'Data created successfully'
+            ], JsonResponse::HTTP_CREATED);
+        } 
+        catch (Exception $e) 
+        {
+            return response()->json([
+                'data'      => [],
+                'success'   => false,
+                'message'   => $e->getMessage()
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);    
+        }
+    }
+
+    public function multipleStore(Request $request)
+    {
+        $validatedData = $request->validate([
+            'inputs.*.name' => 'required',
+            'inputs.*.description' => '',
+            'inputs.*.price' => 'numeric'
+        ]);
+
+        try 
+        {
+            $createdData = [];
+            foreach ($validatedData['inputs'] as $input) {
+                $createdData[] = Product::create($input);
+            }
+
+            return response()->json([
+                'data'      => $createdData,
                 'success'   => true,
                 'message'   => 'Data created successfully'
             ], JsonResponse::HTTP_CREATED);

@@ -128,7 +128,8 @@ export default function Navigation() {
                                 location.pathname === "/general-feature" ||
                                 location.pathname === "/advanced-feature" ||
                                 location.pathname === "/products" ||
-                                location.pathname === "/gallery"
+                                location.pathname === "/gallery" ||
+                                location.pathname === "/multiple-insert"
                                     ? "active"
                                     : ""
                             }`}
@@ -195,6 +196,18 @@ export default function Navigation() {
                                         >
                                             <NavLink href="/gallery">
                                                 Gallery
+                                            </NavLink>
+                                        </li>
+                                        <li
+                                            className={`nav-item ${
+                                                location.pathname ===
+                                                "/multiple-insert"
+                                                    ? "active"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <NavLink href="/multiple-insert">
+                                                Multiple Insert
                                             </NavLink>
                                         </li>
                                     </>

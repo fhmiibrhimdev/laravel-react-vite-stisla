@@ -210,9 +210,9 @@ export default function Profile() {
                     console.error("Error:", error);
                     MySwal.fire({
                         title: "Oops...",
-                        html: "Something went wrong.",
+                        html: error.response.data.message,
                         icon: "error",
-                        timer: 2000,
+                        timer: 3000,
                     });
                 });
         }

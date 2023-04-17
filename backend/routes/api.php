@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
     Route::resource('/products', ProductController::class);
+    Route::post('/products/multiple-store', [ProductController::class, 'multipleStore']);
     Route::resource('/gallery', GalleryController::class);
 });
 
