@@ -3,11 +3,9 @@ import Case from "../../components/Case";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
+import appConfig from "../../config/appConfig";
 
 export default function Profile() {
-    const baseURL = "http://127.0.0.1:8000/";
-    const baseurlAPI = "http://127.0.0.1:8000/api";
-
     const [user, setUser] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [refetch, setRefetch] = useState(Math.random());
@@ -18,7 +16,7 @@ export default function Profile() {
         document.title = "My Profile";
 
         axios
-            .get(`${baseurlAPI}/profile`)
+            .get(`${appConfig.baseurlAPI}/profile`)
             .then((data) => {
                 setUser(data.data.data);
                 setFormProfile({
@@ -150,7 +148,7 @@ export default function Profile() {
 
         if (validateFormProfile()) {
             axios
-                .put(`${baseurlAPI}/profile`, formProfile, {
+                .put(`${appConfig.baseurlAPI}/profile`, formProfile, {
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -186,7 +184,7 @@ export default function Profile() {
 
         if (validateFormPassword()) {
             axios
-                .put(`${baseurlAPI}/update-password`, formPassword, {
+                .put(`${appConfig.baseurlAPI}/update-password`, formPassword, {
                     headers: {
                         "Content-Type": "application/json",
                     },

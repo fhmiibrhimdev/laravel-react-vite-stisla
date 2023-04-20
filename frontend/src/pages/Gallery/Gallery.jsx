@@ -9,9 +9,6 @@ import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
 
 export default function Gallery() {
-    const baseURL = "http://127.0.0.1:8000/";
-    const baseurlAPI = "http://127.0.0.1:8000/api";
-
     const navigate = useNavigate();
 
     const [rows, setProducts] = useState([]);
@@ -32,7 +29,7 @@ export default function Gallery() {
         document.title = "Gallery";
         axios
             .get(
-                `${baseurlAPI}/gallery?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
+                `${appConfig.baseurlAPI}/gallery?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
             )
             .then((data) => {
                 setProducts(data.data.data.data);
@@ -150,7 +147,7 @@ export default function Gallery() {
         if (!isEditing) {
             if (validateForm()) {
                 axios
-                    .post(`${baseurlAPI}/gallery`, formData, {
+                    .post(`${appConfig.baseurlAPI}/gallery`, formData, {
                         headers: {
                             "Content-Type": "multipart/form-data",
                         },
@@ -192,11 +189,15 @@ export default function Gallery() {
                 data.append("image", formData.image);
                 data.append("_method", "put");
                 axios
-                    .post(`${baseurlAPI}/gallery/${modalData.id}`, data, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    })
+                    .post(
+                        `${appConfig.baseurlAPI}/gallery/${modalData.id}`,
+                        data,
+                        {
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        }
+                    )
                     .then((response) => {
                         if (response.status === 200) {
                             Swal.fire({
@@ -248,7 +249,7 @@ export default function Gallery() {
 
     const handleDelete = (id) => {
         axios
-            .delete(`${baseurlAPI}/gallery/${id}`)
+            .delete(`${appConfig.baseurlAPI}/gallery/${id}`)
             .then((data) => {
                 console.log("Success:", data);
                 setProducts(rows.filter((row) => row.id !== id));
@@ -344,7 +345,7 @@ export default function Gallery() {
                                                 <td>
                                                     <a
                                                         href={
-                                                            baseURL +
+                                                            appConfig.baseURL +
                                                             "storage/images/" +
                                                             row.image
                                                         }
@@ -353,7 +354,7 @@ export default function Gallery() {
                                                         <img
                                                             className="tw-aspect-square tw-w-4/6 tw-rounded-lg"
                                                             src={
-                                                                baseURL +
+                                                                appConfig.baseURL +
                                                                 "storage/images/" +
                                                                 row.image
                                                             }

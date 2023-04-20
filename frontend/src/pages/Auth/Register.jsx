@@ -2,11 +2,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import appConfig from "../../config/appConfig";
 import withReactContent from "sweetalert2-react-content";
 
 export default function Register() {
-    const baseURL = "http://127.0.0.1:8000/api";
-
     const navigate = useNavigate();
     const MySwal = withReactContent(Swal);
 
@@ -86,7 +85,7 @@ export default function Register() {
 
         if (validateForm()) {
             axios
-                .post(`${baseURL}/register`, formData, {
+                .post(`${appConfig.baseurlAPI}/register`, formData, {
                     headers: {
                         "Content-Type": "application/json",
                     },

@@ -1,6 +1,8 @@
+import appConfig from "../../config/appConfig";
+
 export function setTokenWithExpiration(key, token) {
     const now = new Date();
-    const expirationTime = now.getTime() + 60 * 60 * 1000;
+    const expirationTime = now.getTime() + appConfig.expirationTime;
     const item = token + "|" + expirationTime;
     localStorage.setItem(key, item);
 }

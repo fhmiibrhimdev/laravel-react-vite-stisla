@@ -9,9 +9,6 @@ import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
 
 export default function MultipleInsert() {
-    const baseURL = "http://127.0.0.1:8000/";
-    const baseurlAPI = "http://127.0.0.1:8000/api";
-
     const MySwal = withReactContent(Swal);
     const navigate = useNavigate();
 
@@ -32,7 +29,7 @@ export default function MultipleInsert() {
         document.title = "Products";
         axios
             .get(
-                `${baseurlAPI}/products?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
+                `${appConfig.baseurlAPI}/products?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
             )
             .then((data) => {
                 setRows(data.data.data.data);
@@ -157,7 +154,7 @@ export default function MultipleInsert() {
         if (!isEditing) {
             if (validateForm()) {
                 axios
-                    .post(`${baseurlAPI}/products`, formData, {
+                    .post(`${appConfig.baseurlAPI}/products`, formData, {
                         headers: {
                             "Content-Type": "application/json",
                         },
@@ -191,11 +188,15 @@ export default function MultipleInsert() {
         } else {
             if (validateForm()) {
                 axios
-                    .put(`${baseurlAPI}/products/${modalData.id}`, formData, {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    })
+                    .put(
+                        `${appConfig.baseurlAPI}/products/${modalData.id}`,
+                        formData,
+                        {
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    )
                     .then((response) => {
                         if (response.status === 200) {
                             Swal.fire({
@@ -243,7 +244,7 @@ export default function MultipleInsert() {
 
     const handleDelete = (id) => {
         axios
-            .delete(`${baseurlAPI}/products/${id}`)
+            .delete(`${appConfig.baseurlAPI}/products/${id}`)
             .then((data) => {
                 console.log("Success:", data);
                 setRows(rows.filter((row) => row.id !== id));
@@ -298,7 +299,7 @@ export default function MultipleInsert() {
 
         axios
             .post(
-                `${baseurlAPI}/products/multiple-store`,
+                `${appConfig.baseurlAPI}/products/multiple-store`,
                 { inputs: inputs },
                 {
                     headers: {
