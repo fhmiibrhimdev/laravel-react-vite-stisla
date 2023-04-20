@@ -4,10 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { getTokenWithExpiration } from "../pages/Auth/Session";
+import appConfig from "../config/appConfig";
 
 export default function Navigation() {
     const [user, setUser] = useState({});
-    const baseURL = "http://127.0.0.1:8000/api";
 
     const navigate = useNavigate();
     const token = getTokenWithExpiration("token");
@@ -46,14 +46,14 @@ export default function Navigation() {
 
     const fetchData = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        await axios.get(`${baseURL}/user`).then((response) => {
+        await axios.get(`${appConfig.baseURL}/user`).then((response) => {
             setUser(response.data);
         });
     };
 
     const logoutHandler = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        await axios.post(`${baseURL}/logout`).then(() => {
+        await axios.post(`${appConfig.baseURL}/logout`).then(() => {
             localStorage.removeItem("token");
             navigate("/");
         });

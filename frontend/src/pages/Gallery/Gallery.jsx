@@ -346,7 +346,7 @@ export default function Gallery() {
                                                     <a
                                                         href={
                                                             appConfig.baseURL +
-                                                            "storage/images/" +
+                                                            "/storage/images/" +
                                                             row.image
                                                         }
                                                         target="_BLANK"
@@ -355,7 +355,7 @@ export default function Gallery() {
                                                             className="tw-aspect-square tw-w-4/6 tw-rounded-lg"
                                                             src={
                                                                 appConfig.baseURL +
-                                                                "storage/images/" +
+                                                                "/storage/images/" +
                                                                 row.image
                                                             }
                                                         />
