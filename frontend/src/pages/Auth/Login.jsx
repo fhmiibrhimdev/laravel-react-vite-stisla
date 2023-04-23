@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import withReactContent from "sweetalert2-react-content";
 import appConfig from "../../config/appConfig";
 import { setTokenWithExpiration, getTokenWithExpiration } from "./Session";
+import InputValidation from "../Layout/Components/InputValidation";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -96,54 +97,30 @@ export default function Login() {
     return (
         <div className="row">
             <div className="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4 tw-mt-10">
-                <div className="card card-primary">
+                <div className="card">
                     <div className="card-header">
                         <h4>Login</h4>
                     </div>
                     <div className="card-body">
                         <form onSubmit={loginHandler}>
+                            <InputValidation
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                error={formErrors.email}
+                            />
+                            <InputValidation
+                                label="Password"
+                                name="password"
+                                type="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                error={formErrors.password}
+                            />
                             <div className="form-group">
-                                <label htmlFor="email">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    className={`form-control ${
-                                        formErrors.email ? "is-invalid" : ""
-                                    }`}
-                                    value={formData.email || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.email && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.email}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    className={`form-control ${
-                                        formErrors.password ? "is-invalid" : ""
-                                    }`}
-                                    value={formData.password || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.password && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.password}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <button
-                                    type="submit"
-                                    className="btn btn-lg btn-block tw-bg-blue-500 tw-text-white"
-                                >
+                                <button className="btn btn-lg btn-block btn-primary tw-text-white">
                                     Login
                                 </button>
                             </div>

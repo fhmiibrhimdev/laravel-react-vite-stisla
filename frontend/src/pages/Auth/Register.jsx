@@ -126,7 +126,7 @@ export default function Register() {
     return (
         <div className="row">
             <div className="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4 tw-mt-10">
-                <div className="card card-primary">
+                <div className="card">
                     <div className="card-header">
                         <h4>Register</h4>
                     </div>
@@ -169,61 +169,45 @@ export default function Register() {
                                     </div>
                                 )}
                             </div>
-
-                            <div className="row">
-                                <div className="col-lg-6">
-                                    <div className="form-group">
-                                        <label htmlFor="password">
-                                            Password
-                                        </label>
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            id="password"
-                                            className={`form-control ${
-                                                formErrors.password
-                                                    ? "is-invalid"
-                                                    : ""
-                                            }`}
-                                            value={formData.password || ""}
-                                            onChange={handleInputChange}
-                                        />
-                                        {formErrors.password && (
-                                            <div className="invalid-feedback">
-                                                {formErrors.password}
-                                            </div>
-                                        )}
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    className={`form-control ${
+                                        formErrors.password ? "is-invalid" : ""
+                                    }`}
+                                    value={formData.password || ""}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.password && (
+                                    <div className="invalid-feedback">
+                                        {formErrors.password}
                                     </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="form-group">
-                                        <label htmlFor="password_confirmation">
-                                            Confirm Password
-                                        </label>
-                                        <input
-                                            type="password"
-                                            name="password_confirmation"
-                                            id="password_confirmation"
-                                            className={`form-control ${
-                                                formErrors.password_confirmation
-                                                    ? "is-invalid"
-                                                    : ""
-                                            }`}
-                                            value={
-                                                formData.password_confirmation ||
-                                                ""
-                                            }
-                                            onChange={handleInputChange}
-                                        />
-                                        {formErrors.password_confirmation && (
-                                            <div className="invalid-feedback">
-                                                {
-                                                    formErrors.password_confirmation
-                                                }
-                                            </div>
-                                        )}
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="password_confirmation">
+                                    Confirm Password
+                                </label>
+                                <input
+                                    type="password"
+                                    name="password_confirmation"
+                                    id="password_confirmation"
+                                    className={`form-control ${
+                                        formErrors.password_confirmation
+                                            ? "is-invalid"
+                                            : ""
+                                    }`}
+                                    value={formData.password_confirmation || ""}
+                                    onChange={handleInputChange}
+                                />
+                                {formErrors.password_confirmation && (
+                                    <div className="invalid-feedback">
+                                        {formErrors.password_confirmation}
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             <div className="form-group">
@@ -251,10 +235,7 @@ export default function Register() {
                             </div>
 
                             <div className="form-group">
-                                <button
-                                    type="submit"
-                                    className="btn btn-lg btn-block tw-bg-blue-500 tw-text-white"
-                                >
+                                <button className="btn btn-lg btn-block btn-primary tw-text-white">
                                     Register
                                 </button>
                             </div>

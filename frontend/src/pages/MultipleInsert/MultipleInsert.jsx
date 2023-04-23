@@ -7,6 +7,13 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
+import Pagination from "../Layout/Components/Pagination";
+import AddButton from "../Layout/Components/AddButton";
+import SearchEntries from "../Layout/Components/SearchEntries";
+import ModalFooter from "../Layout/Components/ModalFooter";
+import InputValidation from "../Layout/Components/InputValidation";
+import TextAreaValidation from "../Layout/Components/TextareaValidation";
+import ModalHeader from "../Layout/Components/ModalHeader";
 
 export default function MultipleInsert() {
     const MySwal = withReactContent(Swal);
@@ -361,34 +368,12 @@ export default function MultipleInsert() {
                 <div className="card">
                     <div className="card-body px-0">
                         <h3>Table Products</h3>
-                        <div className="show-entries">
-                            <p className="show-entries-show">Show</p>
-                            <select
-                                id="length-data"
-                                className="tw-p-1"
-                                value={showing}
-                                onChange={handleShow}
-                            >
-                                <option value="1">1</option>
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                            <p className="show-entries-entries">Entries</p>
-                        </div>
-                        <div className="search-column">
-                            <p>Search: </p>
-                            <input
-                                type="search"
-                                id="search-data"
-                                placeholder="Search here..."
-                                className="form-control"
-                                value={searchTerm}
-                                onChange={handleSearch}
-                            />
-                        </div>
+                        <SearchEntries
+                            showing={showing}
+                            handleShow={handleShow}
+                            searchTerm={searchTerm}
+                            handleSearch={handleSearch}
+                        />
                         <div className="table-responsive tw-max-h-96">
                             <table>
                                 <thead className="tw-sticky tw-top-0">
@@ -452,88 +437,17 @@ export default function MultipleInsert() {
                             </table>
                         </div>
                         {/* Pagination and showing data */}
-                        <div className="d-flex justify-content-between align-items-center mt-4 p-3 table-responsive">
-                            <div>
-                                Showing {(currentPage - 1) * showing + 1} to{" "}
-                                {Math.min(currentPage * showing, totalRows)} of{" "}
-                                {totalRows} results
-                            </div>
-                            <div>
-                                <ul className="pagination">
-                                    <li
-                                        className={`page-item ${
-                                            currentPage === 1 ? "disabled" : ""
-                                        }`}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() =>
-                                                handlePageChange(
-                                                    currentPage - 1
-                                                )
-                                            }
-                                            disabled={currentPage === 1}
-                                        >
-                                            Prev
-                                        </button>
-                                    </li>
-                                    {Array.from(
-                                        { length: totalPages },
-                                        (_, i) => (
-                                            <li
-                                                key={i}
-                                                className={`page-item ${
-                                                    i + 1 === currentPage
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() =>
-                                                        handlePageChange(i + 1)
-                                                    }
-                                                >
-                                                    {i + 1}
-                                                </button>
-                                            </li>
-                                        )
-                                    )}
-                                    <li
-                                        className={`page-item ${
-                                            currentPage === totalPages
-                                                ? "disabled"
-                                                : ""
-                                        }`}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() =>
-                                                handlePageChange(
-                                                    currentPage + 1
-                                                )
-                                            }
-                                            disabled={
-                                                currentPage === totalPages
-                                            }
-                                        >
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            showing={showing}
+                            totalRows={totalRows}
+                            totalPages={totalPages}
+                            handlePageChange={handlePageChange}
+                        />
                         {/* Pagination and showing data */}
                     </div>
                 </div>
-                <button
-                    className="btn-modal"
-                    data-toggle="modal"
-                    data-target="#formDataModal"
-                    onClick={handleAdd}
-                >
-                    <i className="far fa-plus"></i>
-                </button>
+                <AddButton handleAdd={handleAdd} />
             </div>
 
             <div
@@ -646,21 +560,7 @@ export default function MultipleInsert() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary tw-bg-gray-300"
-                                    data-dismiss="modal"
-                                >
-                                    Close
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary tw-bg-blue-500"
-                                >
-                                    Save Data
-                                </button>
-                            </div>
+                            <ModalFooter />
                         </form>
                     </div>
                 </div>
@@ -674,95 +574,34 @@ export default function MultipleInsert() {
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="formDataModalLabel">
-                                {isEditing ? "Edit Data" : "Add Data"}
-                            </h5>
-                            <button
-                                type="button"
-                                className="close"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                        <ModalHeader isEditing={isEditing} />
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="name">Product name</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        id="name"
-                                        className={`form-control ${
-                                            formErrors.name ? "is-invalid" : ""
-                                        }`}
-                                        value={formData.name || ""}
-                                        onChange={handleInputChange}
-                                    />
-                                    {formErrors.name && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.name}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="description">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        name="description"
-                                        id="description"
-                                        className={`form-control ${
-                                            formErrors.description
-                                                ? "is-invalid"
-                                                : ""
-                                        }`}
-                                        style={{ height: 100 }}
-                                        value={formData.description || ""}
-                                        onChange={handleInputChange}
-                                    ></textarea>
-                                    {formErrors.description && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.description}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="price">Price</label>
-                                    <input
-                                        type="text"
-                                        name="price"
-                                        id="price"
-                                        className={`form-control ${
-                                            formErrors.price ? "is-invalid" : ""
-                                        }`}
-                                        value={formData.price || ""}
-                                        onChange={handleInputChange}
-                                    />
-                                    {formErrors.price && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.price}
-                                        </div>
-                                    )}
-                                </div>
+                                <InputValidation
+                                    label="Product name"
+                                    name="name"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    error={formErrors.name}
+                                />
+                                <TextAreaValidation
+                                    label="Description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    error={formErrors.description}
+                                />
+                                <InputValidation
+                                    label="Price"
+                                    name="price"
+                                    type="number"
+                                    value={formData.price}
+                                    onChange={handleInputChange}
+                                    error={formErrors.price}
+                                />
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary tw-bg-gray-300"
-                                    data-dismiss="modal"
-                                >
-                                    Close
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary tw-bg-blue-500"
-                                >
-                                    Save Data
-                                </button>
-                            </div>
+                            <ModalFooter />
                         </form>
                     </div>
                 </div>

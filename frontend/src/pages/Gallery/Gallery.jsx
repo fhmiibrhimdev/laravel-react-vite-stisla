@@ -7,6 +7,13 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
+import Pagination from "../Layout/Components/Pagination";
+import SearchEntries from "../Layout/Components/SearchEntries";
+import AddButton from "../Layout/Components/AddButton";
+import InputValidation from "../Layout/Components/InputValidation";
+import TextAreaValidation from "../Layout/Components/TextareaValidation";
+import ModalFooter from "../Layout/Components/ModalFooter";
+import ModalHeader from "../Layout/Components/ModalHeader";
 
 export default function Gallery() {
     const navigate = useNavigate();
@@ -292,34 +299,12 @@ export default function Gallery() {
                 <div className="card">
                     <div className="card-body px-0">
                         <h3>Table Gallery</h3>
-                        <div className="show-entries">
-                            <p className="show-entries-show">Show</p>
-                            <select
-                                id="length-data"
-                                className="tw-p-1"
-                                value={showing}
-                                onChange={handleShow}
-                            >
-                                <option value="1">1</option>
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                            <p className="show-entries-entries">Entries</p>
-                        </div>
-                        <div className="search-column">
-                            <p>Search: </p>
-                            <input
-                                type="search"
-                                id="search-data"
-                                placeholder="Search here..."
-                                className="form-control"
-                                value={searchTerm}
-                                onChange={handleSearch}
-                            />
-                        </div>
+                        <SearchEntries
+                            showing={showing}
+                            handleShow={handleShow}
+                            searchTerm={searchTerm}
+                            handleSearch={handleSearch}
+                        />
                         <div className="table-responsive tw-max-h-96">
                             <table>
                                 <thead className="tw-sticky tw-top-0">
@@ -403,88 +388,17 @@ export default function Gallery() {
                             </table>
                         </div>
                         {/* Pagination and showing data */}
-                        <div className="d-flex justify-content-between align-items-center mt-4 p-3 table-responsive">
-                            <div>
-                                Showing {(currentPage - 1) * showing + 1} to{" "}
-                                {Math.min(currentPage * showing, totalRows)} of{" "}
-                                {totalRows} results
-                            </div>
-                            <div>
-                                <ul className="pagination">
-                                    <li
-                                        className={`page-item ${
-                                            currentPage === 1 ? "disabled" : ""
-                                        }`}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() =>
-                                                handlePageChange(
-                                                    currentPage - 1
-                                                )
-                                            }
-                                            disabled={currentPage === 1}
-                                        >
-                                            Prev
-                                        </button>
-                                    </li>
-                                    {Array.from(
-                                        { length: totalPages },
-                                        (_, i) => (
-                                            <li
-                                                key={i}
-                                                className={`page-item ${
-                                                    i + 1 === currentPage
-                                                        ? "active"
-                                                        : ""
-                                                }`}
-                                            >
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() =>
-                                                        handlePageChange(i + 1)
-                                                    }
-                                                >
-                                                    {i + 1}
-                                                </button>
-                                            </li>
-                                        )
-                                    )}
-                                    <li
-                                        className={`page-item ${
-                                            currentPage === totalPages
-                                                ? "disabled"
-                                                : ""
-                                        }`}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() =>
-                                                handlePageChange(
-                                                    currentPage + 1
-                                                )
-                                            }
-                                            disabled={
-                                                currentPage === totalPages
-                                            }
-                                        >
-                                            Next
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            showing={showing}
+                            totalRows={totalRows}
+                            totalPages={totalPages}
+                            handlePageChange={handlePageChange}
+                        />
                         {/* Pagination and showing data */}
                     </div>
                 </div>
-                <button
-                    className="btn-modal"
-                    data-toggle="modal"
-                    data-target="#formDataModal"
-                    onClick={handleAdd}
-                >
-                    <i className="far fa-plus"></i>
-                </button>
+                <AddButton handleAdd={handleAdd} />
             </div>
 
             <div
@@ -495,19 +409,7 @@ export default function Gallery() {
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="formDataModalLabel">
-                                {isEditing ? "Edit Data" : "Add Data"}
-                            </h5>
-                            <button
-                                type="button"
-                                className="close"
-                                data-dismiss="modal"
-                                aria-label="Close"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                        <ModalHeader isEditing={isEditing} />
                         <form
                             onSubmit={handleSubmit}
                             encType="multipart/form-data"
@@ -523,59 +425,23 @@ export default function Gallery() {
                                         onChange={handleFileChange}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="name_gallery">
-                                        Name Gallery
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name_gallery"
-                                        id="name_gallery"
-                                        className={`form-control ${
-                                            formErrors.name_gallery
-                                                ? "is-invalid"
-                                                : ""
-                                        }`}
-                                        value={formData.name_gallery || ""}
-                                        onChange={handleInputChange}
-                                    />
-                                    {formErrors.name_gallery && (
-                                        <div className="invalid-feedback">
-                                            {formErrors.name_gallery}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="description_gallery">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        name="description_gallery"
-                                        id="description_gallery"
-                                        className="form-control"
-                                        style={{ height: 100 }}
-                                        value={
-                                            formData.description_gallery || ""
-                                        }
-                                        onChange={handleInputChange}
-                                    ></textarea>
-                                </div>
+                                <InputValidation
+                                    label="Name Gallery"
+                                    name="name_gallery"
+                                    type="text"
+                                    value={formData.name_gallery}
+                                    onChange={handleInputChange}
+                                    error={formErrors.name_gallery}
+                                />
+                                <TextAreaValidation
+                                    label="Description"
+                                    name="description_gallery"
+                                    value={formData.description_gallery}
+                                    onChange={handleInputChange}
+                                    error={formErrors.description_gallery}
+                                />
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary tw-bg-gray-300"
-                                    data-dismiss="modal"
-                                >
-                                    Close
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary tw-bg-blue-500"
-                                >
-                                    Save Data
-                                </button>
-                            </div>
+                            <ModalFooter />
                         </form>
                     </div>
                 </div>
