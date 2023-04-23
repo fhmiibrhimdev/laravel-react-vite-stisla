@@ -42,18 +42,18 @@ export default function Navigation() {
                 handleClickOutsideDropdown
             );
         };
-    }, []);
+    }, [navigate]);
 
     const fetchData = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        await axios.get(`${appConfig.baseURL}/user`).then((response) => {
+        await axios.get(`${appConfig.baseurlAPI}/user`).then((response) => {
             setUser(response.data);
         });
     };
 
     const logoutHandler = async () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        await axios.post(`${appConfig.baseURL}/logout`).then(() => {
+        await axios.post(`${appConfig.baseurlAPI}/logout`).then(() => {
             localStorage.removeItem("token");
             navigate("/");
         });
