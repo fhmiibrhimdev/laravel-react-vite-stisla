@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import appConfig from "../../config/appConfig";
 import withReactContent from "sweetalert2-react-content";
+import InputValidation from "../Layout/Components/InputValidation";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -132,83 +133,38 @@ export default function Register() {
                     </div>
                     <div className="card-body">
                         <form onSubmit={registerHandler}>
-                            <div className="form-group">
-                                <label htmlFor="name">Full name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    id="name"
-                                    className={`form-control ${
-                                        formErrors.name ? "is-invalid" : ""
-                                    }`}
-                                    value={formData.name || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.name && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.name}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="email">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    className={`form-control ${
-                                        formErrors.email ? "is-invalid" : ""
-                                    }`}
-                                    value={formData.email || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.email && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.email}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    className={`form-control ${
-                                        formErrors.password ? "is-invalid" : ""
-                                    }`}
-                                    value={formData.password || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.password && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.password}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="password_confirmation">
-                                    Confirm Password
-                                </label>
-                                <input
-                                    type="password"
-                                    name="password_confirmation"
-                                    id="password_confirmation"
-                                    className={`form-control ${
-                                        formErrors.password_confirmation
-                                            ? "is-invalid"
-                                            : ""
-                                    }`}
-                                    value={formData.password_confirmation || ""}
-                                    onChange={handleInputChange}
-                                />
-                                {formErrors.password_confirmation && (
-                                    <div className="invalid-feedback">
-                                        {formErrors.password_confirmation}
-                                    </div>
-                                )}
-                            </div>
+                            <InputValidation
+                                label="Full name"
+                                name="name"
+                                type="text"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                error={formErrors.name}
+                            />
+                            <InputValidation
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                error={formErrors.email}
+                            />
+                            <InputValidation
+                                label="Password"
+                                name="password"
+                                type="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                error={formErrors.password}
+                            />
+                            <InputValidation
+                                label="Confirmation Password"
+                                name="password_confirmation"
+                                type="password"
+                                value={formData.password_confirmation}
+                                onChange={handleInputChange}
+                                error={formErrors.password_confirmation}
+                            />
 
                             <div className="form-group">
                                 <label htmlFor="role">Role user</label>
