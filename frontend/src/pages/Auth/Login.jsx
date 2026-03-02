@@ -1,97 +1,28 @@
-import axios from "axios";
-import Swal from "sweetalert2";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import withReactContent from "sweetalert2-react-content";
-import appConfig from "../../config/appConfig";
-import { setTokenWithExpiration, getTokenWithExpiration } from "./Session";
-import InputValidation from "../Layout/Components/InputValidation";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "@/hooks/useForm";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { validateForm } from "@/utils/validation";
+import InputValidation from "@/pages/Layout/Components/InputValidation";
+
+const VALIDATION_RULES = {
+    email: { required: "Email is required" },
+    password: { required: "Password is required" },
+};
 
 export default function Login() {
-    const navigate = useNavigate();
-    const MySwal = withReactContent(Swal);
+    useDocumentTitle("Login");
+    const { login, isLoggingIn } = useAuth();
 
-    useEffect(() => {
-        document.title = "Login";
-        if (getTokenWithExpiration("token")) {
-            //redirect page dashboard
-            window.location.href = "/dashboard";
-        }
-    }, []);
+    const { formData, errors, handleChange, isValid } = useForm(
+        { email: "", password: "" },
+        (data) => validateForm(data, VALIDATION_RULES)
+    );
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    });
-
-    const initialFormData = {
-        email: "",
-        password: "",
-    };
-
-    const [formErrors, setFormErrors] = useState({
-        email: "",
-        password: "",
-    });
-
-    const validateForm = () => {
-        let errors = {};
-        let formIsValid = true;
-
-        // Validate input description
-        if (!formData.email) {
-            formIsValid = false;
-            errors.email = "Email is required";
-        }
-
-        // Validate input description
-        if (!formData.password) {
-            formIsValid = false;
-            errors.password = "Password is required";
-        }
-
-        setFormErrors(errors);
-        return formIsValid;
-    };
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const loginHandler = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (validateForm()) {
-            axios
-                .post(`${appConfig.baseurlAPI}/login`, formData, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                .then((response) => {
-                    if (response.status === 200) {
-                        setTokenWithExpiration("token", response.data.token);
-                        MySwal.fire({
-                            title: "Success!",
-                            text: "Login successfully",
-                            icon: "success",
-                            timer: 1500,
-                        }).then(() => {
-                            window.location.href = "/dashboard";
-                        });
-                    } else {
-                        throw new Error("Network response was not ok");
-                    }
-                })
-                .catch((error) => {
-                    MySwal.fire({
-                        title: "Failed!",
-                        text: error.response.data.message,
-                        icon: "error",
-                    });
-                });
-        }
+        if (!isValid()) return;
+        login(formData);
     };
 
     return (
@@ -102,26 +33,29 @@ export default function Login() {
                         <h4>Login</h4>
                     </div>
                     <div className="card-body">
-                        <form onSubmit={loginHandler}>
+                        <form onSubmit={handleSubmit}>
                             <InputValidation
                                 label="Email"
                                 name="email"
                                 type="email"
                                 value={formData.email}
-                                onChange={handleInputChange}
-                                error={formErrors.email}
+                                onChange={handleChange}
+                                error={errors.email}
                             />
                             <InputValidation
                                 label="Password"
                                 name="password"
                                 type="password"
                                 value={formData.password}
-                                onChange={handleInputChange}
-                                error={formErrors.password}
+                                onChange={handleChange}
+                                error={errors.password}
                             />
                             <div className="form-group">
-                                <button className="btn btn-lg btn-block btn-primary tw-text-white">
-                                    Login
+                                <button
+                                    className="btn btn-lg btn-block btn-primary tw-text-white"
+                                    disabled={isLoggingIn}
+                                >
+                                    {isLoggingIn ? "Logging in..." : "Login"}
                                 </button>
                             </div>
                         </form>
