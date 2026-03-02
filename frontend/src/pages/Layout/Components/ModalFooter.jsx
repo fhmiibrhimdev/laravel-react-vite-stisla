@@ -1,6 +1,4 @@
-import React, { Component } from "react";
-
-export default function ModalFooter() {
+export default function ModalFooter({ isSubmitting = false }) {
     return (
         <div className="modal-footer">
             <button
@@ -10,8 +8,12 @@ export default function ModalFooter() {
             >
                 Close
             </button>
-            <button type="submit" className="btn btn-primary tw-bg-blue-500">
-                Save Data
+            <button
+                type="submit"
+                className="btn btn-primary tw-bg-blue-500"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Saving..." : "Save Data"}
             </button>
         </div>
     );

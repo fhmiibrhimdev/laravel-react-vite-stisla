@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+const PER_PAGE_OPTIONS = [1, 5, 10, 25, 50, 100];
 
 export default function SearchEntries({
     showing,
@@ -16,12 +16,11 @@ export default function SearchEntries({
                     value={showing}
                     onChange={handleShow}
                 >
-                    <option value="1">1</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+                    {PER_PAGE_OPTIONS.map((n) => (
+                        <option key={n} value={n}>
+                            {n}
+                        </option>
+                    ))}
                 </select>
                 <p className="show-entries-entries">Entries</p>
             </div>

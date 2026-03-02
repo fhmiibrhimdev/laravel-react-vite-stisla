@@ -1,6 +1,4 @@
-import React from "react";
-
-export default function TextAreaValidation({
+export default function TextareaValidation({
     label,
     name,
     value,
@@ -17,7 +15,7 @@ export default function TextAreaValidation({
                 value={value}
                 onChange={onChange}
                 style={{ height: 100 }}
-            ></textarea>
+            />
             {error && <div className="invalid-feedback">{error}</div>}
         </div>
     );
