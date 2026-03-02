@@ -1,11 +1,8 @@
-import React from "react";
-import Case from "../components/Case";
-import { useEffect } from "react";
+import Case from "@/components/Case";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Dashboard() {
-    useEffect(() => {
-        document.title = "Dashboard";
-    });
+    useDocumentTitle("Dashboard");
 
     return (
         <Case>
@@ -16,7 +13,7 @@ export default function Dashboard() {
             <div className="section-body">
                 <div className="card">
                     <div className="card-body px-0">
-                        <h3>Tabel Dashboard</h3>
+                        <h3>Table Dashboard</h3>
                         <p className="px-4">
                             Lorem ipsum dolor, sit amet consectetur adipisicing
                             elit. Tenetur at asperiores earum officiis

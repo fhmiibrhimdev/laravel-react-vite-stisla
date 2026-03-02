@@ -1,11 +1,8 @@
-import React from "react";
-import Case from "../components/Case";
-import { useEffect } from "react";
+import Case from "@/components/Case";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function GeneralFeature() {
-    useEffect(() => {
-        document.title = "General Feature";
-    }, []);
+    useDocumentTitle("General Feature");
 
     return (
         <Case>
@@ -15,8 +12,8 @@ export default function GeneralFeature() {
 
             <div className="section-body">
                 <div className="card">
+                    <h3>Table General Feature</h3>
                     <div className="card-body px-0">
-                        <h3>Tabel General Feature</h3>
                         <div className="show-entries">
                             <p className="show-entries-show">Show</p>
                             <select id="length-data" className="tw-p-1">
@@ -31,12 +28,7 @@ export default function GeneralFeature() {
                         </div>
                         <div className="search-column">
                             <p>Search: </p>
-                            <input
-                                type="search"
-                                id="search-data"
-                                placeholder="Search here..."
-                                className="form-control"
-                            />
+                            <input type="search" id="search-data" placeholder="Search here..." className="form-control" />
                         </div>
                         <div className="table-responsive tw-max-h-96">
                             <table>
@@ -54,15 +46,9 @@ export default function GeneralFeature() {
                                 <tbody>
                                     <tr className="text-center">
                                         <td>1</td>
-                                        <td className="text-left">
-                                            Air Document Intelligence
-                                        </td>
+                                        <td className="text-left">Air Document Intelligence</td>
                                         <td>
-                                            <button
-                                                className="btn btn-warning mr-2"
-                                                data-toggle="modal"
-                                                data-target="#ubahDataModal"
-                                            >
+                                            <button className="btn btn-warning mr-2" data-toggle="modal" data-target="#ubahDataModal">
                                                 <i className="fas fa-edit"></i>
                                             </button>
                                             <button className="btn btn-danger">

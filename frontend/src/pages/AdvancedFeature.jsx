@@ -1,11 +1,8 @@
-import React from "react";
-import Case from "../components/Case";
-import { useEffect } from "react";
+import Case from "@/components/Case";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function AdvancedFeature() {
-    useEffect(() => {
-        document.title = "Advanced Feature";
-    }, []);
+    useDocumentTitle("Advanced Feature");
 
     return (
         <Case>
@@ -15,19 +12,9 @@ export default function AdvancedFeature() {
 
             <div className="section-body">
                 <div className="card">
+                    <h3>Table Advanced Feature</h3>
                     <div className="card-body px-0">
-                        <h3>Tabel Advanced Feature</h3>
-                        <p className="px-4">
-                            Lorem ipsum dolor, sit amet consectetur adipisicing
-                            elit. Tenetur at asperiores earum officiis
-                            reiciendis necessitatibus eos! Nam harum tempore
-                            molestias aliquam, qui excepturi similique expedita
-                            vitae perferendis voluptatum laudantium vero
-                            deleniti laboriosam assumenda impedit repellendus
-                            eum, commodi totam! Molestiae ducimus placeat totam
-                            nesciunt, perspiciatis dolor mollitia ut saepe cum
-                            sunt?
-                        </p>
+                        <p className="px-4">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tenetur at asperiores earum officiis reiciendis necessitatibus eos!</p>
                     </div>
                 </div>
             </div>
