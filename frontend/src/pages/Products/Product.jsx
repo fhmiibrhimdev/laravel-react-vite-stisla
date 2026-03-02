@@ -4,7 +4,7 @@ import Case from "@/components/Case";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useForm } from "@/hooks/useForm";
 import { usePagination } from "@/hooks/usePagination";
-import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useCreateMultipleProducts } from "@/hooks/useProducts";
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProducts";
 import { validateForm } from "@/utils/validation";
 import { toast } from "@/utils/toast";
 import InputValidation from "@/pages/Layout/Components/InputValidation";
@@ -16,7 +16,6 @@ import ModalFooter from "@/pages/Layout/Components/ModalFooter";
 import ModalHeader from "@/pages/Layout/Components/ModalHeader";
 
 const INITIAL_VALUES = { name: "", description: "", price: "" };
-const INITIAL_MULTIPLE_ROW = { name: "", description: "", price: "" };
 
 const VALIDATION_RULES = {
     name: { required: "Name is required" },
@@ -27,8 +26,8 @@ const VALIDATION_RULES = {
     },
 };
 
-export default function MultipleInsert() {
-    useDocumentTitle("Products - Multiple Insert");
+export default function Product() {
+    useDocumentTitle("Products");
     const navigate = useNavigate();
 
     // ─── Pagination & Search ─────────────────────────────────────────────
@@ -52,30 +51,14 @@ export default function MultipleInsert() {
     const createMutation = useCreateProduct();
     const updateMutation = useUpdateProduct();
     const deleteMutation = useDeleteProduct();
-    const multipleCreateMutation = useCreateMultipleProducts();
 
-    // ─── Single Form State ───────────────────────────────────────────────
+    // ─── Form & Modal State ──────────────────────────────────────────────
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
 
     const { formData, errors, handleChange, isValid, reset, setValues } = useForm(INITIAL_VALUES, (data) => validateForm(data, VALIDATION_RULES));
 
     const isMutating = createMutation.isPending || updateMutation.isPending;
-
-    // ─── Multiple Insert State ───────────────────────────────────────────
-    const [multipleInputs, setMultipleInputs] = useState([{ ...INITIAL_MULTIPLE_ROW }]);
-
-    const addMultipleRow = () => {
-        setMultipleInputs((prev) => [...prev, { ...INITIAL_MULTIPLE_ROW }]);
-    };
-
-    const removeMultipleRow = (index) => {
-        setMultipleInputs((prev) => prev.filter((_, i) => i !== index));
-    };
-
-    const updateMultipleInput = (index, field, value) => {
-        setMultipleInputs((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
-    };
 
     // ─── Handlers ────────────────────────────────────────────────────────
     const handleAdd = () => {
@@ -87,7 +70,11 @@ export default function MultipleInsert() {
     const handleEdit = (row) => {
         setIsEditing(true);
         setEditId(row.id);
-        setValues({ name: row.name, description: row.description, price: row.price });
+        setValues({
+            name: row.name,
+            description: row.description,
+            price: row.price,
+        });
     };
 
     const handleSubmit = (e) => {
@@ -106,16 +93,6 @@ export default function MultipleInsert() {
         }
     };
 
-    const handleSubmitMultiple = (e) => {
-        e.preventDefault();
-        multipleCreateMutation.mutate(multipleInputs, {
-            onSuccess: () => {
-                $(".modal").modal("hide");
-                setMultipleInputs([{ ...INITIAL_MULTIPLE_ROW }]);
-            },
-        });
-    };
-
     const handleConfirmDelete = async (id) => {
         const result = await toast.confirmDelete();
         if (result.isConfirmed) {
@@ -123,11 +100,13 @@ export default function MultipleInsert() {
         }
     };
 
+    // ─── Error handling for 403 ──────────────────────────────────────────
     if (isError) {
         navigate("/403");
         return null;
     }
 
+    // ─── Loading ─────────────────────────────────────────────────────────
     if (isLoading) {
         return (
             <Case>
@@ -142,9 +121,6 @@ export default function MultipleInsert() {
         <Case>
             <div className="section-header px-4 tw-rounded-none tw-shadow-md tw-shadow-gray-200 lg:tw-rounded-lg">
                 <h1 className="mb-1 tw-text-lg">Products</h1>
-                <button data-toggle="modal" data-target="#formDataMultipleModal" onClick={handleAdd} className="btn btn-outline-primary ml-auto">
-                    Add Multiple
-                </button>
             </div>
 
             <div className="section-body">
@@ -152,8 +128,8 @@ export default function MultipleInsert() {
                     <h3>Table Products</h3>
                     <div className="card-body px-0">
                         <SearchEntries showing={pagination.perPage} handleShow={pagination.handlePerPageChange} searchTerm={pagination.search} handleSearch={pagination.handleSearch} />
-                        <div className="table-responsive tw-max-h-96">
-                            <table>
+                        <div className="table-responsive">
+                            <table className="tw-table-auto">
                                 <thead className="tw-sticky tw-top-0">
                                     <tr className="tw-text-gray-700">
                                         <th width="15%" className="text-center">
@@ -187,7 +163,7 @@ export default function MultipleInsert() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5" className="text-center">
+                                            <td colSpan="6" className="text-center">
                                                 No data available in the table
                                             </td>
                                         </tr>
@@ -201,66 +177,13 @@ export default function MultipleInsert() {
                 <AddButton handleAdd={handleAdd} />
             </div>
 
-            {/* Multiple Insert Modal */}
-            <div className="modal fade" id="formDataMultipleModal" aria-hidden="true">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Add Multiple Data</h5>
-                            <button type="button" onClick={addMultipleRow}>
-                                <span aria-hidden="true">
-                                    <i className="fas fa-plus-square tw-text-2xl"></i>
-                                </span>
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmitMultiple}>
-                            <div className="modal-body">
-                                <table>
-                                    <thead>
-                                        <tr className="text-center">
-                                            <th>Product name</th>
-                                            <th>Description</th>
-                                            <th>Price</th>
-                                            <th width="12%">
-                                                <i className="fas fa-cogs"></i>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {multipleInputs.map((input, index) => (
-                                            <tr key={index}>
-                                                <td>
-                                                    <input value={input.name} className="form-control" onChange={(e) => updateMultipleInput(index, "name", e.target.value)} />
-                                                </td>
-                                                <td>
-                                                    <input value={input.description} className="form-control" onChange={(e) => updateMultipleInput(index, "description", e.target.value)} />
-                                                </td>
-                                                <td>
-                                                    <input value={input.price} className="form-control" onChange={(e) => updateMultipleInput(index, "price", e.target.value)} />
-                                                </td>
-                                                <td className="text-center">
-                                                    <button type="button" className="btn btn-danger" onClick={() => removeMultipleRow(index)}>
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <ModalFooter isSubmitting={multipleCreateMutation.isPending} />
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {/* Single Insert/Edit Modal */}
-            <div className="modal fade" id="formDataModal" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
+            {/* Modal */}
+            <div className="modal fade" id="formDataModal" aria-labelledby="formDataModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
                         <ModalHeader isEditing={isEditing} />
                         <form onSubmit={handleSubmit}>
-                            <div className="modal-body">
+                            <div class="modal-body">
                                 <InputValidation label="Product name" name="name" type="text" value={formData.name} onChange={handleChange} error={errors.name} />
                                 <TextareaValidation label="Description" name="description" value={formData.description} onChange={handleChange} error={errors.description} />
                                 <InputValidation label="Price" name="price" type="number" value={formData.price} onChange={handleChange} error={errors.price} />

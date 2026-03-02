@@ -1,283 +1,109 @@
-import React from "react";
-import Case from "../../components/Case";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
-import { debounce } from "lodash";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import appConfig from "../../config/appConfig";
-import Pagination from "../Layout/Components/Pagination";
-import SearchEntries from "../Layout/Components/SearchEntries";
-import AddButton from "../Layout/Components/AddButton";
-import InputValidation from "../Layout/Components/InputValidation";
-import TextAreaValidation from "../Layout/Components/TextareaValidation";
-import ModalFooter from "../Layout/Components/ModalFooter";
-import ModalHeader from "../Layout/Components/ModalHeader";
+import Case from "@/components/Case";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useForm } from "@/hooks/useForm";
+import { usePagination } from "@/hooks/usePagination";
+import { useGallery, useCreateGallery, useUpdateGallery, useDeleteGallery } from "@/hooks/useGallery";
+import { validateForm } from "@/utils/validation";
+import { toast } from "@/utils/toast";
+import InputValidation from "@/pages/Layout/Components/InputValidation";
+import TextareaValidation from "@/pages/Layout/Components/TextareaValidation";
+import Pagination from "@/pages/Layout/Components/Pagination";
+import AddButton from "@/pages/Layout/Components/AddButton";
+import SearchEntries from "@/pages/Layout/Components/SearchEntries";
+import ModalFooter from "@/pages/Layout/Components/ModalFooter";
+import ModalHeader from "@/pages/Layout/Components/ModalHeader";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://127.0.0.1:8000";
+const INITIAL_VALUES = {
+    name_gallery: "",
+    description_gallery: "",
+    image: null,
+};
+
+const VALIDATION_RULES = {
+    name_gallery: { required: "Name gallery is required" },
+};
 
 export default function Gallery() {
+    useDocumentTitle("Gallery");
     const navigate = useNavigate();
 
-    const [rows, setProducts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // ─── Pagination & Search ─────────────────────────────────────────────
+    const pagination = usePagination();
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalRows, setTotalRows] = useState(0);
-
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchTermDebounced, setSearchTermDebounced] = useState("");
-    const [showing, setShowing] = useState(10);
-
-    const [refetch, setRefetch] = useState(Math.random());
-    const MySwal = withReactContent(Swal);
-
-    useEffect(() => {
-        document.title = "Gallery";
-        axios
-            .get(
-                `${appConfig.baseurlAPI}/gallery?page=${currentPage}&per_page=${showing}&search=${searchTerm}&showing=${showing}`
-            )
-            .then((data) => {
-                setProducts(data.data.data.data);
-                setTotalPages(data.data.data.last_page);
-                setTotalRows(data.data.data.total);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                if (error.response.status === 403) {
-                    navigate("/403");
-                } else {
-                    console.log(error);
-                }
-                setIsLoading(false);
-            });
-    }, [currentPage, showing, searchTermDebounced, refetch]);
-
-    const [modalData, setModalData] = useState(null);
-    const [isEditing, setIsEditing] = useState(null);
-
-    /**
-     * Initial form, reset input fields, and validate the form
-     */
-
-    const [formData, setFormData] = useState({
-        name_gallery: "",
-        description_gallery: "",
-        image: null,
+    // ─── TanStack Query ──────────────────────────────────────────────────
+    const {
+        data: galleryData,
+        isLoading,
+        isError,
+    } = useGallery({
+        page: pagination.currentPage,
+        perPage: pagination.perPage,
+        search: pagination.debouncedSearch,
     });
 
-    const initialFormData = {
-        name_gallery: "",
-        description_gallery: "",
-        image: null,
-    };
+    const rows = galleryData?.data ?? [];
+    const totalPages = galleryData?.last_page ?? 1;
+    const totalRows = galleryData?.total ?? 0;
 
-    const [formErrors, setFormErrors] = useState({
-        name_gallery: "",
-        description_gallery: "",
-        image: null,
-    });
+    const createMutation = useCreateGallery();
+    const updateMutation = useUpdateGallery();
+    const deleteMutation = useDeleteGallery();
 
-    const validateForm = () => {
-        let errors = {};
-        let formIsValid = true;
+    // ─── Form & Modal State ──────────────────────────────────────────────
+    const [isEditing, setIsEditing] = useState(false);
+    const [editId, setEditId] = useState(null);
 
-        // Validate input name
-        if (!formData.name_gallery) {
-            formIsValid = false;
-            errors.name_gallery = "Name gallery is required";
-        }
+    const { formData, errors, handleChange, isValid, reset, setValues } = useForm(INITIAL_VALUES, (data) => validateForm(data, VALIDATION_RULES));
 
-        setFormErrors(errors);
-        return formIsValid;
-    };
+    const isMutating = createMutation.isPending || updateMutation.isPending;
 
-    /**
-     * Handle searching, pagination, and showing data
-     */
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const handleSearchDebounced = useCallback(
-        debounce((value) => {
-            setSearchTermDebounced(value);
-        }, appConfig.debounceTimeout),
-        []
-    );
-
-    const handleSearch = (event) => {
-        const value = event.target.value;
-        setSearchTerm(value);
-        handleSearchDebounced(value);
-    };
-
-    const handleShow = (event) => {
-        setShowing(parseInt(event.target.value));
-    };
-
-    /**
-     * Handle request
-     */
-
+    // ─── Handlers ────────────────────────────────────────────────────────
     const handleAdd = () => {
-        setModalData(null);
         setIsEditing(false);
-        setFormData(initialFormData);
+        setEditId(null);
+        reset();
     };
 
-    const handleEdit = (id) => {
-        const data = rows.find((row) => row.id === id);
-        setModalData(data);
-        setFormData({
-            name_gallery: data.name_gallery,
-            description_gallery: data.description_gallery,
+    const handleEdit = (row) => {
+        setIsEditing(true);
+        setEditId(row.id);
+        setValues({
+            name_gallery: row.name_gallery,
+            description_gallery: row.description_gallery,
             image: null,
         });
-        setIsEditing(true);
     };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!isValid()) return;
 
-    const handleFileChange = (event) => {
-        setFormData({ ...formData, image: event.target.files[0] });
-    };
+        const onSuccess = () => {
+            $(".modal").modal("hide");
+            reset();
+        };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-        if (!isEditing) {
-            if (validateForm()) {
-                axios
-                    .post(`${appConfig.baseurlAPI}/gallery`, formData, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    })
-                    .then((response) => {
-                        if (response.status === 201) {
-                            Swal.fire({
-                                title: "Success!",
-                                text: "Data created successfully",
-                                icon: "success",
-                                timer: 1500,
-                            }).then(() => {
-                                $(".modal").modal("hide");
-                                setRefetch(Math.random());
-                                setFormData(initialFormData);
-                            });
-                        } else {
-                            throw new Error("Network response was not ok");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                        MySwal.fire({
-                            title: "Oops...",
-                            html: "Something went wrong.",
-                            icon: "error",
-                            timer: 2000,
-                        });
-                    });
-            }
+        if (isEditing) {
+            updateMutation.mutate({ id: editId, data: formData }, { onSuccess });
         } else {
-            if (validateForm()) {
-                const data = new FormData();
-                data.append("name_gallery", formData.name_gallery);
-                data.append(
-                    "description_gallery",
-                    formData.description_gallery
-                );
-                data.append("image", formData.image);
-                data.append("_method", "put");
-                axios
-                    .post(
-                        `${appConfig.baseurlAPI}/gallery/${modalData.id}`,
-                        data,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        }
-                    )
-                    .then((response) => {
-                        if (response.status === 200) {
-                            Swal.fire({
-                                title: "Success!",
-                                text: "Data updated successfully",
-                                icon: "success",
-                                timer: 1500,
-                            }).then(() => {
-                                $(".modal").modal("hide");
-                                setRefetch(Math.random()); // refetch new data
-                                setFormData(initialFormData); // set initial value for input
-                            });
-                        } else {
-                            throw new Error("Network response was not ok");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                        MySwal.fire({
-                            title: "Oops...",
-                            html: "Something went wrong.",
-                            icon: "error",
-                            timer: 2000,
-                        });
-                    });
-            }
+            createMutation.mutate(formData, { onSuccess });
         }
     };
 
-    /**
-     * Handle delete request
-     */
-
-    const handleConfirmationDelete = (id) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                handleDelete(id);
-            }
-        });
+    const handleConfirmDelete = async (id) => {
+        const result = await toast.confirmDelete();
+        if (result.isConfirmed) {
+            deleteMutation.mutate(id);
+        }
     };
 
-    const handleDelete = (id) => {
-        axios
-            .delete(`${appConfig.baseurlAPI}/gallery/${id}`)
-            .then((data) => {
-                console.log("Success:", data);
-                setProducts(rows.filter((row) => row.id !== id));
-                setTotalRows(totalRows - 1);
-                MySwal.fire({
-                    title: "Successfully!",
-                    html: "Data deleted succesfully.",
-                    icon: "success",
-                    timer: 1500,
-                });
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                MySwal.fire({
-                    title: "Oops...",
-                    html: "Something went wrong.",
-                    icon: "error",
-                    timer: 2000,
-                });
-            });
-    };
+    if (isError) {
+        navigate("/403");
+        return null;
+    }
 
     if (isLoading) {
         return (
@@ -297,14 +123,9 @@ export default function Gallery() {
 
             <div className="section-body">
                 <div className="card">
+                    <h3>Table Gallery</h3>
                     <div className="card-body px-0">
-                        <h3>Table Gallery</h3>
-                        <SearchEntries
-                            showing={showing}
-                            handleShow={handleShow}
-                            searchTerm={searchTerm}
-                            handleSearch={handleSearch}
-                        />
+                        <SearchEntries showing={pagination.perPage} handleShow={pagination.handlePerPageChange} searchTerm={pagination.search} handleSearch={pagination.handleSearch} />
                         <div className="table-responsive tw-max-h-96">
                             <table>
                                 <thead className="tw-sticky tw-top-0">
@@ -321,54 +142,22 @@ export default function Gallery() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Array.isArray(rows) && rows.length ? (
+                                    {rows.length > 0 ? (
                                         rows.map((row, index) => (
-                                            <tr key={index}>
-                                                <td className="text-center">
-                                                    {index + 1}
-                                                </td>
+                                            <tr key={row.id}>
+                                                <td className="text-center">{index + 1}</td>
                                                 <td>
-                                                    <a
-                                                        href={
-                                                            appConfig.baseURL +
-                                                            "/storage/images/" +
-                                                            row.image
-                                                        }
-                                                        target="_BLANK"
-                                                    >
-                                                        <img
-                                                            className="tw-aspect-square tw-w-4/6 tw-rounded-lg"
-                                                            src={
-                                                                appConfig.baseURL +
-                                                                "/storage/images/" +
-                                                                row.image
-                                                            }
-                                                        />
+                                                    <a href={`${BASE_URL}/storage/images/${row.image}`} target="_blank" rel="noopener noreferrer">
+                                                        <img className="tw-aspect-square tw-w-4/6 tw-rounded-lg" src={`${BASE_URL}/storage/images/${row.image}`} alt={row.name_gallery} />
                                                     </a>
                                                 </td>
                                                 <td>{row.name_gallery}</td>
-                                                <td>
-                                                    {row.description_gallery}
-                                                </td>
+                                                <td>{row.description_gallery}</td>
                                                 <td className="text-center">
-                                                    <button
-                                                        onClick={() =>
-                                                            handleEdit(row.id)
-                                                        }
-                                                        className="btn btn-primary mr-2"
-                                                        data-toggle="modal"
-                                                        data-target="#formDataModal"
-                                                    >
+                                                    <button onClick={() => handleEdit(row)} className="btn btn-primary mr-2" data-toggle="modal" data-target="#formDataModal">
                                                         <i className="fas fa-edit"></i>
                                                     </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleConfirmationDelete(
-                                                                row.id
-                                                            )
-                                                        }
-                                                        className="btn btn-danger"
-                                                    >
+                                                    <button onClick={() => handleConfirmDelete(row.id)} className="btn btn-danger">
                                                         <i className="fas fa-trash"></i>
                                                     </button>
                                                 </td>
@@ -376,72 +165,35 @@ export default function Gallery() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td
-                                                colSpan="5"
-                                                className="text-center"
-                                            >
-                                                Not data available in the table
+                                            <td colSpan="5" className="text-center">
+                                                No data available in the table
                                             </td>
                                         </tr>
                                     )}
                                 </tbody>
                             </table>
                         </div>
-                        {/* Pagination and showing data */}
-                        <Pagination
-                            currentPage={currentPage}
-                            showing={showing}
-                            totalRows={totalRows}
-                            totalPages={totalPages}
-                            handlePageChange={handlePageChange}
-                        />
-                        {/* Pagination and showing data */}
+                        <Pagination currentPage={pagination.currentPage} showing={pagination.perPage} totalRows={totalRows} totalPages={totalPages} handlePageChange={pagination.handlePageChange} />
                     </div>
                 </div>
                 <AddButton handleAdd={handleAdd} />
             </div>
 
-            <div
-                className="modal fade"
-                id="formDataModal"
-                aria-labelledby="formDataModalLabel"
-                aria-hidden="true"
-            >
+            {/* Modal */}
+            <div className="modal fade" id="formDataModal" aria-labelledby="formDataModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <ModalHeader isEditing={isEditing} />
-                        <form
-                            onSubmit={handleSubmit}
-                            encType="multipart/form-data"
-                        >
+                        <form onSubmit={handleSubmit} encType="multipart/form-data">
                             <div className="modal-body">
                                 <div className="form-group">
                                     <label htmlFor="image">Image</label>
-                                    <input
-                                        type="file"
-                                        name="image"
-                                        id="image"
-                                        className="form-control"
-                                        onChange={handleFileChange}
-                                    />
+                                    <input type="file" name="image" id="image" className="form-control" onChange={handleChange} />
                                 </div>
-                                <InputValidation
-                                    label="Name Gallery"
-                                    name="name_gallery"
-                                    type="text"
-                                    value={formData.name_gallery}
-                                    onChange={handleInputChange}
-                                    error={formErrors.name_gallery}
-                                />
-                                <TextAreaValidation
-                                    label="Description"
-                                    name="description_gallery"
-                                    value={formData.description_gallery}
-                                    onChange={handleInputChange}
-                                    error={formErrors.description_gallery}
-                                />
+                                <InputValidation label="Name Gallery" name="name_gallery" type="text" value={formData.name_gallery} onChange={handleChange} error={errors.name_gallery} />
+                                <TextareaValidation label="Description" name="description_gallery" value={formData.description_gallery} onChange={handleChange} error={errors.description_gallery} />
                             </div>
-                            <ModalFooter />
+                            <ModalFooter isSubmitting={isMutating} />
                         </form>
                     </div>
                 </div>
